@@ -6,6 +6,7 @@ import json
 import re
 from urllib.parse import urlsplit, urlunsplit
 
+from app.core.targets import normalize_target
 from app.models.schemas import DiagnosisRecord
 
 SENSITIVE = re.compile(r"password|passwd|secret|token|cookie|authorization|api[_-]?key", re.I)
@@ -15,6 +16,10 @@ ASSIGNMENT = re.compile(
 BEARER = re.compile(r"(?i)\bBearer\s+\S+")
 IPV4 = re.compile(r"(?<![\d.])(?:\d{1,3}\.){3}\d{1,3}(?![\d.])")
 IPV6 = re.compile(r"(?<![\w:])\[?(?:[0-9a-fA-F]{0,4}:){2,7}[0-9a-fA-F]{0,4}\]?(?![\w:])")
+EXPORT_NOTICE = (
+    "敏感字段、URL 查询串和非公网 IP 已不可逆地替换或删除；导入仅保存脱敏快照，"
+    "不能恢复原始数据或重新验证检测。分享前仍请检查目标、备注和证据。"
+)
 
 
 def redact_text(text: str) -> str:
@@ -71,9 +76,14 @@ def scrub(value):
 
 def safe_record(record: DiagnosisRecord) -> dict:
     result = scrub(record.model_dump(mode="json"))
-    result["export_notice"] = (
-        "敏感字段、URL 查询串和非公网 IP 地址已脱敏；仍请在分享前检查目标、备注和证据。"
-    )
+    # A masked IP literal is not a valid Target. Use an explicit, inert placeholder
+    # so the redacted snapshot can pass the same strict schema on import.
+    try:
+        normalize_target(result["target"])
+    except ValueError:
+        if "[PRIVATE-IP" not in result["target"]:
+            raise
+        result["target"] = "redacted.invalid"
     return result
 
 
@@ -92,10 +102,13 @@ def markdown(record: DiagnosisRecord) -> str:
         f"- 协议 / 端口：{data['context'].get('protocol', '未记录')} / "
         f"{data['context'].get('port', '未记录')}",
         f"- 地址族：{'、'.join(data['context'].get('address_families', [])) or '未记录'}",
+        f"- DNS 解析器：{data['context'].get('resolver', {}).get('resolver', '未记录')}",
         f"- 规则版本：`{data['rule_version']}`",
     ]
     if data["notes"]:
         lines.append(f"- 备注：{data['notes']}")
+    if data["context"].get("http_resolution"):
+        lines.append(f"- HTTP 地址条件：{data['context']['http_resolution']}")
     lines += ["", "## 结论", "", data["summary"], "", "## 检测模块", ""]
     for module in data["modules"]:
         duration = module["duration_ms"] if module["duration_ms"] is not None else "未测量"
@@ -131,7 +144,7 @@ def markdown(record: DiagnosisRecord) -> str:
         "",
         "- 单次结果仅适用于本次目标、网络环境和测试时间；不同环境不能直接归因。",
         "- HTTP 耗时仅到响应头；Ping 和路由节点不回应不一定说明网站不可访问。",
-        f"- {data['export_notice']}",
+        f"- {EXPORT_NOTICE}",
         "",
     ]
     return "\n".join(lines)
@@ -214,6 +227,11 @@ def html_report(record: DiagnosisRecord) -> str:
         + " · 规则："
         + escape(data["rule_version"])
         + "</p>"
+        + (
+            "<p>HTTP 地址条件：" + escape(data["context"]["http_resolution"]) + "</p>"
+            if data["context"].get("http_resolution")
+            else ""
+        )
         + (f"<p>备注：{escape(data['notes'])}</p>" if data["notes"] else "")
         + "</header><h2>检测模块</h2>"
         + modules
@@ -222,6 +240,6 @@ def html_report(record: DiagnosisRecord) -> str:
         + '<div class="foot"><strong>限制与隐私</strong><p>单次结果仅适用于本次目标、'
         "网络环境和检测时间。HTTP 耗时仅到响应头；"
         "ICMP 中间节点不回应不一定代表网站不可访问。</p><p>"
-        + escape(data["export_notice"])
+        + escape(EXPORT_NOTICE)
         + "</p></div></main></body></html>"
     )

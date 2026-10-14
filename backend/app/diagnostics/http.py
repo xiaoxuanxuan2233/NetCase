@@ -1,12 +1,12 @@
 """Bounded HTTP/1.1 header probe; pin connections to validated DNS addresses."""
 
 import asyncio
-import ipaddress
 import socket
 import ssl
 import time
 from urllib.parse import urljoin, urlsplit, urlunsplit
 
+from app.core.targets import addresses_allowed
 from app.models.schemas import ModuleResult
 
 MAX_HEADER = 32 * 1024
@@ -95,21 +95,21 @@ async def response_headers(url: str, address: str, timeout: float) -> tuple[int,
             pass
 
 
-async def diagnose(url: str, timeout: float, allow_local: bool, original_host: str) -> ModuleResult:
+async def diagnose(
+    url: str, timeout: float, allow_local: bool, original_host: str, initial_addresses: list[str]
+) -> ModuleResult:
     started = time.perf_counter()
     redirects: list[dict] = []
     current = url
     try:
         for hop in range(MAX_REDIRECTS + 1):
             host, port, _, _ = parse_url(current)
-            resolved = await addresses(host, port, timeout)
-            allowed = [
-                address
-                for address in resolved
-                if ipaddress.ip_address(address).is_global
-                or (allow_local and host == original_host)
-            ]
-            if not allowed or len(allowed) != len(resolved):
+            # Pin the original host to this diagnosis's DNS evidence; redirects to
+            # another host are resolved separately and checked before connecting.
+            resolved = (
+                initial_addresses if host == original_host else await addresses(host, port, timeout)
+            )
+            if not addresses_allowed(resolved, allow_local and host == original_host):
                 return ModuleResult(
                     name="http",
                     status="failed",
@@ -117,7 +117,7 @@ async def diagnose(url: str, timeout: float, allow_local: bool, original_host: s
                     detail="目标或重定向包含本地 / 特殊 IP。跨主机重定向不允许访问本地地址。",
                     evidence={"redirects": redirects},
                 )
-            for address in allowed[:4]:
+            for address in resolved[:4]:
                 try:
                     status, headers = await response_headers(current, address, timeout)
                     break
@@ -162,6 +162,10 @@ async def diagnose(url: str, timeout: float, allow_local: bool, original_host: s
                     "final_url": safe_url(current),
                     "redirects": redirects,
                     "headers": selected,
+                    "connected_address": address,
+                    "resolution_note": (
+                        "初始目标沿用本次 DNS 检测结果；跨主机重定向单独解析并校验。"
+                    ),
                     "timing_note": "总耗时至响应头；未读取或保存响应正文",
                 },
             )

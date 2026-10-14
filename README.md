@@ -83,6 +83,8 @@ bash scripts/start.sh
 
 Windows 默认 `%LOCALAPPDATA%\NetCase\netcase.db`；macOS/Linux 默认 `~/.local/share/netcase/netcase.db`，遵循 `XDG_DATA_HOME`。`NETCASE_DATA_DIR` 可更改目录。SQLite 保存记录、收藏、草稿、设置；无遥测、无账号、无自动上传。浏览器另缓存主题，方便首屏配色。导出的报告过滤 URL 查询串、敏感字段与非公网 IP，但备注及公开目标可能仍敏感，分享前检查。
 
+JSON 导出是脱敏快照，可重新导入为“用户导入”记录；被删除的查询串、凭据和被替换的非公网 IP **不可逆，导入不会恢复或重新检测**。若目标本身是非公网 IP，导出中使用 `redacted.invalid` 占位；保留原始记录请在本机数据库中管理。HTTP 首次连接沿用该次 DNS 检测的地址，跨主机重定向会重新解析和校验，因此后续响应可能涉及不同条件；报告会标注这一点。
+
 ## 架构与范围
 
 `frontend/` 是 React、TypeScript、Vite；`backend/app/` 是 FastAPI、Pydantic、asyncio、SQLite/SQLAlchemy。`diagnostics/` 只负责测量，`analyzers/` 负责规则，`reports/` 负责脱敏；前端调用同源 `/api`。设计与 API 详见 [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)，安全边界见 [SECURITY.md](SECURITY.md)。

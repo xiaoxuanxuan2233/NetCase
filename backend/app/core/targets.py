@@ -44,3 +44,13 @@ def normalize_target(value: str) -> str:
         return urlunsplit((parsed.scheme, netloc, parsed.path or "/", parsed.query, ""))
     except (UnicodeError, ValueError) as exc:
         raise ValueError(str(exc)) from None
+
+
+def addresses_allowed(addresses: list[str], allow_local: bool) -> bool:
+    """Reject an entire DNS answer set if any address needs an explicit local opt-in."""
+    try:
+        return bool(addresses) and all(
+            ipaddress.ip_address(address).is_global or allow_local for address in addresses
+        )
+    except ValueError:
+        return False

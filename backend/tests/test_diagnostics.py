@@ -9,10 +9,11 @@ import pytest
 from pydantic import ValidationError
 
 from app.analyzers.rules import analyze
-from app.diagnostics import dns, http, tcp, tls
+from app.diagnostics import commands, dns, http, tcp, tls
 from app.diagnostics.engine import overall, run, selected_modules
 from app.diagnostics.target import parse_target
 from app.models.schemas import DiagnosisInput, ModuleResult
+from app.reports.export import markdown
 
 
 def test_dns_success_and_difference_is_not_pollution(monkeypatch):
@@ -84,22 +85,21 @@ def test_tls_certificate_error_stays_strict(monkeypatch):
 
 
 def test_http_503_is_a_server_response(monkeypatch):
-    async def fake_addresses(*_):
-        return ["93.184.215.14"]
-
     async def fake_headers(*_):
         return 503, {"content-type": "text/plain"}
 
-    monkeypatch.setattr(http, "addresses", fake_addresses)
     monkeypatch.setattr(http, "response_headers", fake_headers)
-    result = asyncio.run(http.diagnose("https://example.com/", 1, False, "example.com"))
+    result = asyncio.run(
+        http.diagnose("https://example.com/", 1, False, "example.com", ["93.184.215.14"])
+    )
     assert result.status == "warning"
     assert result.error_type == "HTTP_503"
     assert result.evidence["status_code"] == 503
     assert "网站服务" in result.detail
 
 
-def test_http_rejects_redirect_to_local_network(monkeypatch):
+@pytest.mark.parametrize("allow_local", [False, True])
+def test_http_rejects_redirect_to_local_network(monkeypatch, allow_local):
     async def fake_addresses(host, *_):
         return ["127.0.0.1"] if host == "localhost" else ["93.184.215.14"]
 
@@ -108,7 +108,9 @@ def test_http_rejects_redirect_to_local_network(monkeypatch):
 
     monkeypatch.setattr(http, "addresses", fake_addresses)
     monkeypatch.setattr(http, "response_headers", fake_headers)
-    result = asyncio.run(http.diagnose("https://example.com/", 1, False, "example.com"))
+    result = asyncio.run(
+        http.diagnose("https://example.com/", 1, allow_local, "example.com", ["93.184.215.14"])
+    )
     assert result.error_type == "ADDRESS_BLOCKED"
     assert len(result.evidence["redirects"]) == 1
 
@@ -183,6 +185,135 @@ def test_custom_icmp_also_resolves_before_local_access(monkeypatch):
     assert selected_modules(request, "https", False) == ["dns", "ping"]
     result = asyncio.run(run(request))
     assert result.modules[1].error_type == "LOCAL_OPT_IN_REQUIRED"
+
+
+@pytest.mark.parametrize("module", ["tcp", "tls", "http", "ping", "traceroute"])
+def test_all_probes_reject_private_dns_without_opt_in(monkeypatch, module):
+    async def private(*_):
+        return ModuleResult(
+            name="dns",
+            status="success",
+            detail="private",
+            evidence={"records": {"A": ["192.168.1.1"], "AAAA": []}},
+        )
+
+    async def must_not_probe(*_, **__):
+        raise AssertionError("A private address must not be probed")
+
+    monkeypatch.setattr(dns, "diagnose", private)
+    monkeypatch.setattr(
+        {"tcp": tcp, "tls": tls, "http": http, "ping": commands, "traceroute": commands}[module],
+        "diagnose",
+        must_not_probe,
+    )
+    request = DiagnosisInput(target="router.example", mode="custom", modules=[module])
+    result = asyncio.run(run(request))
+    assert result.modules[1].status == "unsupported"
+    assert result.modules[1].error_type == "LOCAL_OPT_IN_REQUIRED"
+
+
+def test_custom_tls_local_opt_in_uses_observed_address(monkeypatch):
+    async def private(*_):
+        return ModuleResult(
+            name="dns",
+            status="success",
+            detail="private",
+            evidence={"records": {"A": ["192.168.1.1"], "AAAA": []}},
+        )
+
+    observed = []
+
+    async def fake_tls(host, port, address, timeout):
+        observed.append((host, port, address))
+        return ModuleResult(name="tls", status="success", detail="TLS validated")
+
+    monkeypatch.setattr(dns, "diagnose", private)
+    monkeypatch.setattr(tls, "diagnose", fake_tls)
+    request = DiagnosisInput(
+        target="router.example", mode="custom", modules=["tls"], allow_local=True
+    )
+    result = asyncio.run(run(request))
+    assert result.modules[1].status == "success"
+    assert observed == [("router.example", 443, "192.168.1.1")]
+
+
+def test_mixed_public_private_dns_answer_blocks_all_connections(monkeypatch):
+    async def mixed(*_):
+        return ModuleResult(
+            name="dns",
+            status="success",
+            detail="mixed",
+            evidence={"records": {"A": ["93.184.215.14", "127.0.0.1"], "AAAA": []}},
+        )
+
+    async def must_not_probe(*_, **__):
+        raise AssertionError("Mixed answer set must be rejected without opt-in")
+
+    monkeypatch.setattr(dns, "diagnose", mixed)
+    monkeypatch.setattr(tls, "diagnose", must_not_probe)
+    result = asyncio.run(run(DiagnosisInput(target="example.com", mode="custom", modules=["tls"])))
+    assert result.modules[1].error_type == "LOCAL_OPT_IN_REQUIRED"
+
+
+def test_http_pins_initial_dns_but_resolves_redirect_host(monkeypatch):
+    looked_up = []
+    connected = []
+
+    async def redirected_addresses(host, *_):
+        looked_up.append(host)
+        return ["93.184.215.15"]
+
+    async def headers(url, address, _):
+        connected.append((url, address))
+        return (
+            (302, {"location": "https://other.example/next"}) if len(connected) == 1 else (200, {})
+        )
+
+    monkeypatch.setattr(http, "addresses", redirected_addresses)
+    monkeypatch.setattr(http, "response_headers", headers)
+    result = asyncio.run(
+        http.diagnose("https://example.com/", 1, False, "example.com", ["93.184.215.14"])
+    )
+    assert result.status == "success"
+    assert looked_up == ["other.example"]
+    assert [address for _, address in connected] == ["93.184.215.14", "93.184.215.15"]
+    assert result.evidence["connected_address"] == "93.184.215.15"
+
+
+def test_http_does_not_re_resolve_failed_dns(monkeypatch):
+    async def must_not_resolve(*_):
+        raise AssertionError("The first hop must use the diagnosis DNS result")
+
+    monkeypatch.setattr(http, "addresses", must_not_resolve)
+    result = asyncio.run(http.diagnose("https://example.com/", 1, False, "example.com", []))
+    assert result.error_type == "ADDRESS_BLOCKED"
+
+
+def test_engine_http_report_describes_shared_and_redirect_dns_conditions(monkeypatch):
+    async def resolved(*_):
+        return ModuleResult(
+            name="dns",
+            status="success",
+            detail="public",
+            evidence={
+                "resolver": "system",
+                "server": "192.0.2.53",
+                "records": {"A": ["93.184.215.14"], "AAAA": []},
+            },
+        )
+
+    seen = []
+
+    async def fake_http(url, timeout, allow_local, original_host, addresses):
+        seen.append((original_host, addresses))
+        return ModuleResult(name="http", status="success", detail="HTTP 200")
+
+    monkeypatch.setattr(dns, "diagnose", resolved)
+    monkeypatch.setattr(http, "diagnose", fake_http)
+    result = asyncio.run(run(DiagnosisInput(target="example.com", mode="custom", modules=["http"])))
+    assert seen == [("example.com", ["93.184.215.14"])]
+    assert "跨主机重定向" in result.context["http_resolution"]
+    assert "HTTP 地址条件" in markdown(result)
 
 
 def test_plain_ipv6_target_uses_valid_https_url():
