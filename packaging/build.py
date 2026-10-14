@@ -71,7 +71,7 @@ def build() -> Path:
     (DIST / f"{archive.name}.sha256").write_text(
         f"{digest}  {archive.name}\n", encoding="ascii"
     )
-    print(f"已生成并自检：{archive}", flush=True)
+    print(f"Built and smoke-tested: {archive}", flush=True)
     return archive
 
 
