@@ -14,7 +14,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 DIST = ROOT / "release-dist"
 BUILD = ROOT / "build"
-VERSION = "0.1.0-preview.1"
+VERSION = "0.1.0-preview.2"
 
 
 def platform_label() -> str:

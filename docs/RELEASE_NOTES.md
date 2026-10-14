@@ -1,4 +1,6 @@
-# NetCase v0.1.0 Preview 1
+# NetCase v0.1.0 Preview 2
+
+This preview incorporates the fixes verified on `main` in commit `bb6d87c`: all connection modules apply the same local-address opt-in policy, JSON redacted reports can be re-imported without restoring removed data, and the first HTTP connection uses the current diagnosis's DNS addresses. Cross-host redirects are separately resolved and validated. This build supersedes Preview 1; download this preview for those fixes.
 
 NetCase is a local-first, single-target network troubleshooting workspace. Enter a domain, IP address or HTTP(S) URL to see DNS, TCP, TLS, HTTP and optional ICMP evidence with Chinese explanations. No account, telemetry or cloud server is required.
 

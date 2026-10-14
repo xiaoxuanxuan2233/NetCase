@@ -1,8 +1,8 @@
 # NetCase
 
-[Download Windows x64](https://github.com/xiaoxuanxuan2233/NetCase/releases/download/v0.1.0-preview.1/NetCase-0.1.0-preview.1-windows-x64.zip) · [All platform packages](https://github.com/xiaoxuanxuan2233/NetCase/releases/tag/v0.1.0-preview.1)
+[Download Windows x64](https://github.com/xiaoxuanxuan2233/NetCase/releases/download/v0.1.0-preview.2/NetCase-0.1.0-preview.2-windows-x64.zip) · [All platform packages](https://github.com/xiaoxuanxuan2233/NetCase/releases/tag/v0.1.0-preview.2)
 
-These links point to the published `v0.1.0-preview.1` assets; checksums and all platforms are on the release page.
+These links point to the published `v0.1.0-preview.2` assets; checksums and all platforms are on the release page.
 
 **Understand your network, not just test it.** A local-first, single-target network diagnosis workspace with evidence-based Chinese explanations.
 

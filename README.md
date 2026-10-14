@@ -1,8 +1,8 @@
 # NetCase
 
-[⬇ Windows x64 软件包直链](https://github.com/xiaoxuanxuan2233/NetCase/releases/download/v0.1.0-preview.1/NetCase-0.1.0-preview.1-windows-x64.zip) · [其他平台下载与发布说明](https://github.com/xiaoxuanxuan2233/NetCase/releases/tag/v0.1.0-preview.1)
+[⬇ Windows x64 软件包直链](https://github.com/xiaoxuanxuan2233/NetCase/releases/download/v0.1.0-preview.2/NetCase-0.1.0-preview.2-windows-x64.zip) · [其他平台下载与发布说明](https://github.com/xiaoxuanxuan2233/NetCase/releases/tag/v0.1.0-preview.2)
 
-上述直链对应已发布的 `v0.1.0-preview.1` 附件；完整列表及 SHA-256 校验文件见 Release 页面。
+上述直链对应已发布的 `v0.1.0-preview.2` 附件；完整列表及 SHA-256 校验文件见 Release 页面。
 
 **Understand your network, not just test it.** 让网络故障变得可观察、可解释、可追踪。
 
@@ -24,10 +24,10 @@ NetCase 是本地运行的单目标网络诊断工具。它按 DNS、TCP、TLS�
 
 | 系统 | 下载 | 启动方式 |
 | --- | --- | --- |
-| Windows x64 | [ZIP 直链](https://github.com/xiaoxuanxuan2233/NetCase/releases/download/v0.1.0-preview.1/NetCase-0.1.0-preview.1-windows-x64.zip) | 完整解压，双击 `NetCase/NetCase.exe` |
-| macOS Intel | [ZIP 直链](https://github.com/xiaoxuanxuan2233/NetCase/releases/download/v0.1.0-preview.1/NetCase-0.1.0-preview.1-macos-x64.zip) | 完整解压，在终端运行 `NetCase/NetCase` |
-| macOS Apple Silicon | [ZIP 直链](https://github.com/xiaoxuanxuan2233/NetCase/releases/download/v0.1.0-preview.1/NetCase-0.1.0-preview.1-macos-arm64.zip) | 完整解压，在终端运行 `NetCase/NetCase` |
-| Linux x64 | [tar.gz 直链](https://github.com/xiaoxuanxuan2233/NetCase/releases/download/v0.1.0-preview.1/NetCase-0.1.0-preview.1-linux-x64.tar.gz) | 解压后运行 `NetCase/NetCase` |
+| Windows x64 | [ZIP 直链](https://github.com/xiaoxuanxuan2233/NetCase/releases/download/v0.1.0-preview.2/NetCase-0.1.0-preview.2-windows-x64.zip) | 完整解压，双击 `NetCase/NetCase.exe` |
+| macOS Intel | [ZIP 直链](https://github.com/xiaoxuanxuan2233/NetCase/releases/download/v0.1.0-preview.2/NetCase-0.1.0-preview.2-macos-x64.zip) | 完整解压，在终端运行 `NetCase/NetCase` |
+| macOS Apple Silicon | [ZIP 直链](https://github.com/xiaoxuanxuan2233/NetCase/releases/download/v0.1.0-preview.2/NetCase-0.1.0-preview.2-macos-arm64.zip) | 完整解压，在终端运行 `NetCase/NetCase` |
+| Linux x64 | [tar.gz 直链](https://github.com/xiaoxuanxuan2233/NetCase/releases/download/v0.1.0-preview.2/NetCase-0.1.0-preview.2-linux-x64.tar.gz) | 解压后运行 `NetCase/NetCase` |
 
 这是便携式程序文件夹，不是 Windows 安装器或已签名的 macOS App。预发布版本没有 Windows 代码签名和 Apple 公证；Linux 初始目标为 Ubuntu 22.04 或更新的兼容 glibc 环境。每个平台的包在同系统 GitHub runner 上构建，并以本地 API 与首页自检作为上传门槛；真实网络行为仍需用户实机反馈。
 

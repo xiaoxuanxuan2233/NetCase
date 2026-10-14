@@ -51,7 +51,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: netcase-${{ matrix.runner }}
-          path: release-dist/NetCase-0.1.0-preview.1-*
+          path: release-dist/NetCase-0.1.0-preview.2-*
           if-no-files-found: error
           retention-days: 14
 
@@ -72,7 +72,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create v0.1.0-preview.1 release-dist/* \
+          gh release create v0.1.0-preview.2 release-dist/* \
             --target "$GITHUB_SHA" --prerelease \
-            --title 'NetCase v0.1.0 Preview 1' \
+            --title 'NetCase v0.1.0 Preview 2' \
             --notes-file docs/RELEASE_NOTES.md
