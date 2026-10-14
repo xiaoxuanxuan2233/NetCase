@@ -28,7 +28,7 @@ from app.models.schemas import (
     ReportImport,
     Settings,
 )
-from app.reports.export import html_report, markdown, safe_record
+from app.reports.export import EXPORT_NOTICE, html_report, markdown, safe_record
 from app.storage.database import Base, Draft, Favorite, Preference, Record, make_database
 
 MAX_BODY_BYTES = 2 * 1024 * 1024
@@ -260,7 +260,10 @@ def create_app(database_url: str | None = None) -> FastAPI:
                 for r in db.scalars(select(Record).order_by(Record.created_at)).all()
             ]
         return Response(
-            json.dumps({"schema_version": 1, "records": records}, ensure_ascii=False),
+            json.dumps(
+                {"schema_version": 1, "export_notice": EXPORT_NOTICE, "records": records},
+                ensure_ascii=False,
+            ),
             media_type="application/json",
             headers={"Content-Disposition": 'attachment; filename="netcase-records.json"'},
         )
@@ -384,7 +387,11 @@ def create_app(database_url: str | None = None) -> FastAPI:
             record = DiagnosisRecord.model_validate(row.payload)
         contents = {
             "json": lambda: json.dumps(
-                {"schema_version": 1, "records": [safe_record(record)]},
+                {
+                    "schema_version": 1,
+                    "export_notice": EXPORT_NOTICE,
+                    "records": [safe_record(record)],
+                },
                 ensure_ascii=False,
                 indent=2,
             ),

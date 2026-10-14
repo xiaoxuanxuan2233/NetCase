@@ -1,8 +1,8 @@
 # NetCase
 
-[⬇ Windows x64 软件包直链](https://github.com/xiaoxuanxuan2233/NetCase/releases/download/v0.1.0-preview.1/NetCase-0.1.0-preview.1-windows-x64.zip) · [其他平台下载与发布说明](https://github.com/xiaoxuanxuan2233/NetCase/releases/tag/v0.1.0-preview.1)
+[⬇ Windows x64 软件包直链](https://github.com/xiaoxuanxuan2233/NetCase/releases/download/v0.1.0-preview.2/NetCase-0.1.0-preview.2-windows-x64.zip) · [其他平台下载与发布说明](https://github.com/xiaoxuanxuan2233/NetCase/releases/tag/v0.1.0-preview.2)
 
-> 上述链接仅在 GitHub 原生构建和预发布成功后可用；请以 Release 页面实际附件为准。
+上述直链对应已发布的 `v0.1.0-preview.2` 附件；完整列表及 SHA-256 校验文件见 Release 页面。
 
 **Understand your network, not just test it.** 让网络故障变得可观察、可解释、可追踪。
 
@@ -24,10 +24,10 @@ NetCase 是本地运行的单目标网络诊断工具。它按 DNS、TCP、TLS�
 
 | 系统 | 下载 | 启动方式 |
 | --- | --- | --- |
-| Windows x64 | [ZIP 直链](https://github.com/xiaoxuanxuan2233/NetCase/releases/download/v0.1.0-preview.1/NetCase-0.1.0-preview.1-windows-x64.zip) | 完整解压，双击 `NetCase/NetCase.exe` |
-| macOS Intel | [ZIP 直链](https://github.com/xiaoxuanxuan2233/NetCase/releases/download/v0.1.0-preview.1/NetCase-0.1.0-preview.1-macos-x64.zip) | 完整解压，在终端运行 `NetCase/NetCase` |
-| macOS Apple Silicon | [ZIP 直链](https://github.com/xiaoxuanxuan2233/NetCase/releases/download/v0.1.0-preview.1/NetCase-0.1.0-preview.1-macos-arm64.zip) | 完整解压，在终端运行 `NetCase/NetCase` |
-| Linux x64 | [tar.gz 直链](https://github.com/xiaoxuanxuan2233/NetCase/releases/download/v0.1.0-preview.1/NetCase-0.1.0-preview.1-linux-x64.tar.gz) | 解压后运行 `NetCase/NetCase` |
+| Windows x64 | [ZIP 直链](https://github.com/xiaoxuanxuan2233/NetCase/releases/download/v0.1.0-preview.2/NetCase-0.1.0-preview.2-windows-x64.zip) | 完整解压，双击 `NetCase/NetCase.exe` |
+| macOS Intel | [ZIP 直链](https://github.com/xiaoxuanxuan2233/NetCase/releases/download/v0.1.0-preview.2/NetCase-0.1.0-preview.2-macos-x64.zip) | 完整解压，在终端运行 `NetCase/NetCase` |
+| macOS Apple Silicon | [ZIP 直链](https://github.com/xiaoxuanxuan2233/NetCase/releases/download/v0.1.0-preview.2/NetCase-0.1.0-preview.2-macos-arm64.zip) | 完整解压，在终端运行 `NetCase/NetCase` |
+| Linux x64 | [tar.gz 直链](https://github.com/xiaoxuanxuan2233/NetCase/releases/download/v0.1.0-preview.2/NetCase-0.1.0-preview.2-linux-x64.tar.gz) | 解压后运行 `NetCase/NetCase` |
 
 这是便携式程序文件夹，不是 Windows 安装器或已签名的 macOS App。预发布版本没有 Windows 代码签名和 Apple 公证；Linux 初始目标为 Ubuntu 22.04 或更新的兼容 glibc 环境。每个平台的包在同系统 GitHub runner 上构建，并以本地 API 与首页自检作为上传门槛；真实网络行为仍需用户实机反馈。
 
@@ -82,6 +82,8 @@ bash scripts/start.sh
 ## 本地数据与隐私
 
 Windows 默认 `%LOCALAPPDATA%\NetCase\netcase.db`；macOS/Linux 默认 `~/.local/share/netcase/netcase.db`，遵循 `XDG_DATA_HOME`。`NETCASE_DATA_DIR` 可更改目录。SQLite 保存记录、收藏、草稿、设置；无遥测、无账号、无自动上传。浏览器另缓存主题，方便首屏配色。导出的报告过滤 URL 查询串、敏感字段与非公网 IP，但备注及公开目标可能仍敏感，分享前检查。
+
+JSON 导出是脱敏快照，可重新导入为“用户导入”记录；被删除的查询串、凭据和被替换的非公网 IP **不可逆，导入不会恢复或重新检测**。若目标本身是非公网 IP，导出中使用 `redacted.invalid` 占位；保留原始记录请在本机数据库中管理。HTTP 首次连接沿用该次 DNS 检测的地址，跨主机重定向会重新解析和校验，因此后续响应可能涉及不同条件；报告会标注这一点。
 
 ## 架构与范围
 

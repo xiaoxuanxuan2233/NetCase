@@ -8,6 +8,7 @@ from datetime import UTC, datetime
 from uuid import uuid4
 
 from app.analyzers.rules import RULE_VERSION, analyze
+from app.core.targets import addresses_allowed
 from app.diagnostics import commands, dns, http, tcp, tls
 from app.diagnostics.target import parse_target
 from app.models.schemas import DiagnosisInput, DiagnosisRecord, ModuleResult
@@ -56,7 +57,18 @@ async def run(request: DiagnosisInput, on_progress=None) -> DiagnosisRecord:
         if on_progress:
             on_progress(name, "running", list(results))
         try:
-            if name == "dns":
+            if (
+                name != "dns"
+                and addresses
+                and not addresses_allowed(addresses, request.allow_local)
+            ):
+                result = ModuleResult(
+                    name=name,
+                    status="unsupported",
+                    error_type="LOCAL_OPT_IN_REQUIRED",
+                    detail="目标包含本地或特殊 IP，须明确允许本地目标检测。",
+                )
+            elif name == "dns":
                 result = await dns.diagnose(
                     target.host,
                     target.is_ip,
@@ -72,17 +84,9 @@ async def run(request: DiagnosisInput, on_progress=None) -> DiagnosisRecord:
                     records = result.evidence.get("records", {})
                     addresses = records.get("A", [])[:4] + records.get("AAAA", [])[:4]
             elif name == "tcp":
-                if not request.allow_local and any(_special(a) for a in addresses):
-                    result = ModuleResult(
-                        name="tcp",
-                        status="failed",
-                        error_type="LOCAL_OPT_IN_REQUIRED",
-                        detail="目标包含本地或特殊 IP，须明确允许本地目标检测。",
-                    )
-                else:
-                    result = await tcp.diagnose(
-                        target.host, target.port, addresses, request.timeout_seconds
-                    )
+                result = await tcp.diagnose(
+                    target.host, target.port, addresses, request.timeout_seconds
+                )
                 connected = next(
                     (
                         a["address"]
@@ -108,12 +112,12 @@ async def run(request: DiagnosisInput, on_progress=None) -> DiagnosisRecord:
                 )
             elif name == "http":
                 tls_result = next((m for m in results if m.name == "tls"), None)
-                if not request.allow_local and any(_special(a) for a in addresses):
+                if not addresses:
                     result = ModuleResult(
                         name="http",
                         status="unsupported",
-                        error_type="LOCAL_OPT_IN_REQUIRED",
-                        detail="尚未明确允许本地目标检测。",
+                        error_type="DNS_REQUIRED",
+                        detail="没有可用 IP 地址，已跳过 HTTP 请求。",
                     )
                 elif target.scheme == "https" and tls_result and tls_result.status != "success":
                     result = ModuleResult(
@@ -124,7 +128,11 @@ async def run(request: DiagnosisInput, on_progress=None) -> DiagnosisRecord:
                     )
                 else:
                     result = await http.diagnose(
-                        target.url, request.timeout_seconds, request.allow_local, target.host
+                        target.url,
+                        request.timeout_seconds,
+                        request.allow_local,
+                        target.host,
+                        addresses,
                     )
             else:
                 if not addresses:
@@ -133,13 +141,6 @@ async def run(request: DiagnosisInput, on_progress=None) -> DiagnosisRecord:
                         status="unsupported",
                         error_type="DNS_REQUIRED",
                         detail="没有可用 IP 地址，已跳过探测。",
-                    )
-                elif not request.allow_local and any(_special(a) for a in addresses):
-                    result = ModuleResult(
-                        name=name,
-                        status="unsupported",
-                        error_type="LOCAL_OPT_IN_REQUIRED",
-                        detail="尚未明确允许本地目标检测。",
                     )
                 else:
                     result = await commands.diagnose(name, addresses[0])
@@ -168,6 +169,11 @@ async def run(request: DiagnosisInput, on_progress=None) -> DiagnosisRecord:
         "resolver": resolver_details,
         "network_label": request.network_label or "未标注",
     }
+    if "http" in names:
+        context["http_resolution"] = (
+            "HTTP 初始目标使用本次 DNS 检测所得地址（IP 目标使用输入地址）；"
+            "跨主机重定向会重新解析并检查地址，因此后续响应条件可能不同。"
+        )
     return DiagnosisRecord(
         id=str(uuid4()),
         created_at=datetime.now(UTC),
@@ -183,7 +189,3 @@ async def run(request: DiagnosisInput, on_progress=None) -> DiagnosisRecord:
         environment=f"{context['network_label']} / {platform.system()} / {request.resolver}",
         source="runtime",
     )
-
-
-def _special(address: str) -> bool:
-    return not ipaddress.ip_address(address).is_global

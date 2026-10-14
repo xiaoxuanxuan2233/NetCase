@@ -1,12 +1,12 @@
 # NetCase
 
-[Download Windows x64](https://github.com/xiaoxuanxuan2233/NetCase/releases/download/v0.1.0-preview.1/NetCase-0.1.0-preview.1-windows-x64.zip) · [All platform packages](https://github.com/xiaoxuanxuan2233/NetCase/releases/tag/v0.1.0-preview.1)
+[Download Windows x64](https://github.com/xiaoxuanxuan2233/NetCase/releases/download/v0.1.0-preview.2/NetCase-0.1.0-preview.2-windows-x64.zip) · [All platform packages](https://github.com/xiaoxuanxuan2233/NetCase/releases/tag/v0.1.0-preview.2)
 
-> These links become available after the native builds and preview release succeed.
+These links point to the published `v0.1.0-preview.2` assets; checksums and all platforms are on the release page.
 
 **Understand your network, not just test it.** A local-first, single-target network diagnosis workspace with evidence-based Chinese explanations.
 
-> Source preview: automated tests and build have run in a Linux container. Windows and macOS real-network behavior and actual product screenshots still need manual acceptance before a release tag.
+> Preview release: native packages passed CI build and bundled UI/API smoke checks on Windows, Linux, and both macOS architectures. Real-network behavior and product screenshots still need manual acceptance.
 
 ## Features
 

@@ -118,6 +118,26 @@ class DiagnosisInput(StrictModel):
 class ReportImport(StrictModel):
     schema_version: Literal[1]
     records: list[DiagnosisRecord] = Field(min_length=1, max_length=500)
+    export_notice: str | None = Field(default=None, max_length=500)
+
+    @model_validator(mode="before")
+    @classmethod
+    def legacy_export_notice(cls, value: object) -> object:
+        if not isinstance(value, dict) or not isinstance(value.get("records"), list):
+            return value
+        # Preview 1 exported the notice inside every record. It is metadata,
+        # not a DiagnosisRecord field; accept those existing files on import.
+        records = []
+        for record in value["records"]:
+            if isinstance(record, dict):
+                cleaned = {key: item for key, item in record.items() if key != "export_notice"}
+                if isinstance(cleaned.get("target"), str) and "[PRIVATE-IP" in cleaned["target"]:
+                    # Older exports masked IP literals into invalid target syntax.
+                    cleaned["target"] = "redacted.invalid"
+                records.append(cleaned)
+            else:
+                records.append(record)
+        return {**value, "records": records}
 
     @model_validator(mode="after")
     def unique_ids(self) -> "ReportImport":

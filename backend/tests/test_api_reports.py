@@ -5,7 +5,7 @@ import httpx
 
 from app.main import create_app
 from app.models.schemas import DiagnosisRecord, ModuleResult
-from app.reports.export import html_report, markdown, safe_record
+from app.reports.export import EXPORT_NOTICE, html_report, markdown, safe_record
 
 HEADERS = {"x-netcase-client": "dashboard"}
 
@@ -176,5 +176,58 @@ def test_import_compare_clear_and_body_limit(tmp_path):
                 assert comparison["left"]["source"] == "imported"
                 assert (await client.delete("/api/records", headers=HEADERS)).status_code == 204
                 assert (await client.get("/api/records")).json()["total"] == 0
+
+    asyncio.run(exercise())
+
+
+def test_redacted_json_export_import_roundtrip_and_legacy_notice(tmp_path):
+    record = fixture_record("private-target")
+    record.target = "https://192.168.1.2/status?token=supersecret"
+    record.context["http_resolution"] = "HTTP 初始目标沿用本次 DNS；跨主机重定向单独解析并校验。"
+    assert "HTTP 地址条件" in markdown(record)
+    assert "跨主机重定向" in html_report(record)
+    app = create_app(f"sqlite:///{tmp_path / 'roundtrip.db'}")
+
+    async def exercise():
+        async with app.router.lifespan_context(app):
+            async with httpx.AsyncClient(
+                transport=httpx.ASGITransport(app=app), base_url="http://127.0.0.1:8000"
+            ) as client:
+                source = {"schema_version": 1, "records": [record.model_dump(mode="json")]}
+                assert (
+                    await client.post("/api/records/import", headers=HEADERS, json=source)
+                ).status_code == 201
+                single = (await client.get("/api/records/private-target/report?format=json")).json()
+                bulk = (await client.get("/api/records/export")).json()
+                for exported in (single, bulk):
+                    assert exported["export_notice"] == EXPORT_NOTICE
+                    assert exported["records"][0]["target"] == "redacted.invalid"
+                    assert "export_notice" not in exported["records"][0]
+                    assert "supersecret" not in str(exported)
+                    assert "192.168.1.2" not in str(exported)
+                assert (await client.delete("/api/records", headers=HEADERS)).status_code == 204
+                imported = await client.post("/api/records/import", headers=HEADERS, json=bulk)
+                assert imported.status_code == 201, imported.text
+                restored = (await client.get("/api/records/private-target")).json()
+                assert restored["target"] == "redacted.invalid"
+                assert restored["source"] == "imported"
+                assert "supersecret" not in str(restored)
+                assert "192.168.1.2" not in str(restored)
+                legacy = {
+                    "schema_version": 1,
+                    "records": [
+                        {
+                            **safe_record(record),
+                            "id": "legacy",
+                            "target": "https://[PRIVATE-IP]/status",
+                            "export_notice": "旧版逐条附加的提示",
+                        }
+                    ],
+                }
+                older = await client.post("/api/records/import", headers=HEADERS, json=legacy)
+                assert older.status_code == 201, older.text
+                assert (await client.get("/api/records/legacy")).json()[
+                    "target"
+                ] == "redacted.invalid"
 
     asyncio.run(exercise())
