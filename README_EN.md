@@ -2,15 +2,13 @@
 
 [Download Windows x64](https://github.com/xiaoxuanxuan2233/NetCase/releases/download/v0.1.0-preview.2/NetCase-0.1.0-preview.2-windows-x64.zip) · [All platform packages](https://github.com/xiaoxuanxuan2233/NetCase/releases/tag/v0.1.0-preview.2)
 
-These links point to the published `v0.1.0-preview.2` assets; checksums and all platforms are on the release page.
+Other platforms and SHA-256 checksums are on the [release page](https://github.com/xiaoxuanxuan2233/NetCase/releases/tag/v0.1.0-preview.2).
 
 **Understand your network, not just test it.** A local-first, single-target network diagnosis workspace with evidence-based Chinese explanations.
 
-> Preview release: native packages passed CI build and bundled UI/API smoke checks on Windows, Linux, and both macOS architectures. Real-network behavior and product screenshots still need manual acceptance.
-
 ## Features
 
-Dashboard with real history metrics and honest empty states; Quick / Full / Custom DNS, TCP, TLS, HTTP, Ping and traceroute checks; progress, conclusions, evidence, history filters, two-record comparison, notes, effective theme and timeout settings, local deletion, and redacted Markdown / JSON / HTML reports. Public DNS and local-network probing require explicit user selection. Imported JSON reports are marked as imported.
+Dashboard with history metrics and empty states; Quick / Full / Custom DNS, TCP, TLS, HTTP, Ping and traceroute checks; progress, conclusions, evidence, history filters, two-record comparison, notes, theme and timeout settings, local deletion, and redacted Markdown / JSON / HTML reports. Public DNS and local-network probing require explicit user selection. Imported JSON reports are marked as imported.
 
 DNS variance is not proof of poisoning; failed TCP is not proof of firewall filtering. HTTP 403/429/5xx means an HTTP response was received. Conclusions attach evidence and next steps.
 
@@ -46,8 +44,8 @@ SQLite database: `%LOCALAPPDATA%\NetCase\netcase.db` on Windows; `~/.local/share
 
 From `backend`: `uv sync --locked`, then `uv run --no-sync ruff check app tests`, `uv run --no-sync ruff format --check app tests`, `uv run --no-sync pytest -q`. From `frontend`: `npm ci`, `npm run lint`, `npm test`, `npm run build`.
 
-Automated tests mock public network probes; real network behavior is platform-dependent. HTTP is an HTTP/1.1 header-only probe with at most five redirects. DNS is a bounded built-in UDP/TCP resolver, and system resolver discovery needs Windows/macOS acceptance. Ping/traceroute depend on system tools and ICMP permissions. No subnet scanning, bulk ports, continuous monitoring, AI, or MCP in this release.
+Tests use mocks instead of public network probes. HTTP reads HTTP/1.1 response headers and follows at most five redirects. DNS uses a bounded built-in UDP/TCP resolver; the system nameserver configuration varies by OS. Ping and traceroute depend on system tools and ICMP permissions. This release does not include subnet scanning, bulk port checks, continuous monitoring, AI, or MCP.
 
 ## Project
 
-Architecture and API: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md). Contributions: [CONTRIBUTING.md](CONTRIBUTING.md). Security: [SECURITY.md](SECURITY.md). Changelog: [CHANGELOG.md](CHANGELOG.md). Actual screenshots will be added after visual acceptance; mockups are not product screenshots. MIT is proposed and requires the owner's final confirmation before publication.
+Architecture and API: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md). Contributions: [CONTRIBUTING.md](CONTRIBUTING.md). Security: [SECURITY.md](SECURITY.md). Changelog: [CHANGELOG.md](CHANGELOG.md). License: [LICENSE](LICENSE).
