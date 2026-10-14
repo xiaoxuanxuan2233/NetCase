@@ -1,6 +1,8 @@
 name: Native packages
 
 on:
+  push:
+    branches: [package-preview]
   workflow_dispatch:
     inputs:
       publish_preview:
@@ -56,7 +58,7 @@ jobs:
           retention-days: 14
 
   publish:
-    if: ${{ inputs.publish_preview == true }}
+    if: ${{ github.ref == 'refs/heads/package-preview' || inputs.publish_preview == true }}
     needs: build
     runs-on: ubuntu-latest
     permissions:
