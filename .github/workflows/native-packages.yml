@@ -1,0 +1,78 @@
+name: Native packages
+
+on:
+  workflow_dispatch:
+    inputs:
+      publish_preview:
+        description: 'Publish a GitHub prerelease after every native build passes'
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        runner: [windows-latest, ubuntu-22.04, macos-15-intel, macos-15]
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v7
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Backend test and lint
+        working-directory: backend
+        run: |
+          uv sync --locked
+          uv run --no-sync ruff check app tests
+          uv run --no-sync ruff format --check app tests
+          uv run --no-sync pytest -q
+      - name: Frontend test and build
+        working-directory: frontend
+        run: |
+          npm ci
+          npm run lint
+          npm test
+          npm run build
+      - name: Install native packager
+        run: uv pip install --python backend/.venv pyinstaller==6.22.3
+      - name: Build, launch and verify local UI
+        working-directory: backend
+        run: uv run --no-sync python ../packaging/build.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: netcase-${{ matrix.runner }}
+          path: release-dist/NetCase-0.1.0-preview.1-*
+          if-no-files-found: error
+          retention-days: 14
+
+  publish:
+    if: ${{ inputs.publish_preview == true }}
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v5
+        with:
+          pattern: netcase-*
+          path: release-dist
+          merge-multiple: true
+      - name: Publish verified preview assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create v0.1.0-preview.1 release-dist/* \
+            --target "$GITHUB_SHA" --prerelease \
+            --title 'NetCase v0.1.0 Preview 1' \
+            --notes-file docs/RELEASE_NOTES.md

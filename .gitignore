@@ -1,0 +1,16 @@
+node_modules/
+.venv/
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+*.tsbuildinfo
+dist/
+*.db
+*.db-shm
+*.db-wal
+.env
+.DS_Store
+coverage/
+artifacts/
+build/
+release-dist/

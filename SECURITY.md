@@ -1,0 +1,9 @@
+# Security and privacy
+
+NetCase is designed for one explicitly selected target at a time. The service must remain bound to `127.0.0.1`. It rejects URL credentials, validates host/port/timeout, caps concurrent jobs, body size, redirects and execution time, and invokes OS tools with argument arrays (`shell=False`). Non-public destinations require a user opt-in for the original target; cross-host redirects to non-public addresses are blocked even with opt-in. Redirects resolve then connect to a validated IP, preserving HTTP Host and TLS SNI. A private address in a DNS answer is not automatically contacted.
+
+FastAPI checks the Host header, permits only its local UI Origins, does not enable CORS, and requires a custom header on mutation requests. These are mitigations against ordinary cross-site browser requests, not a defense against another local process, a compromised browser extension, or a malicious user on the same machine. Never expose this HTTP API through a reverse proxy or bind it to an external interface. The CSP prevents inline scripts in the served UI; report HTML escapes content. No account, telemetry, hidden upload, or default public DNS lookup is provided.
+
+SQLite records may contain full targets and user notes. Exports mask common credentials, URL queries and non-public IPs, but automated redaction cannot guarantee removal of every secret. Review each export before sharing, and delete local history in Settings when needed. Imported data is marked as imported rather than represented as newly measured.
+
+Report a vulnerability privately to the repository owner via GitHub's private vulnerability reporting feature once the repository is published. Until then, contact the maintainer privately; avoid sharing exploit details or sensitive samples in a public issue. Supported version: source preview 0.1.0; security fixes are best effort until the first tagged release.

@@ -1,0 +1,5 @@
+# Dependency and license review (source preview)
+
+The runtime dependencies in the local lockfiles are FastAPI, Pydantic, SQLAlchemy and Uvicorn for Python; React, React DOM and Lucide for the browser. Package metadata in this workspace reports MIT for FastAPI, Pydantic, SQLAlchemy, React, React DOM and Lucide; Uvicorn and Starlette report BSD-3-Clause. Frontend installed packages include MIT, ISC, BSD, Apache-2.0 and some build-only packages with MPL-2.0, CC-BY-4.0, BlueOak-1.0.0 or CC0-1.0 metadata (notably Lightning CSS and browser support data). No incompatible copyleft runtime dependency was identified in this local review.
+
+This is an initial metadata inspection, not a complete legal opinion or shipped-artifact audit. Before a public tagged release, regenerate license inventories from the exact lockfiles in a clean install, review third-party notices and any distributed assets, confirm the project owner/copyright holder, and approve the proposed MIT license. Update both lockfiles and this document when dependencies change.

@@ -1,0 +1,1 @@
+"""NetCase local application."""
