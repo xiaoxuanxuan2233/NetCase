@@ -2,7 +2,7 @@
 
 [⬇ Windows x64 软件包直链](https://github.com/xiaoxuanxuan2233/NetCase/releases/download/v0.1.0-preview.1/NetCase-0.1.0-preview.1-windows-x64.zip) · [其他平台下载与发布说明](https://github.com/xiaoxuanxuan2233/NetCase/releases/tag/v0.1.0-preview.1)
 
-> 上述链接仅在 GitHub 原生构建和预发布成功后可用；请以 Release 页面实际附件为准。
+上述直链对应已发布的 `v0.1.0-preview.1` 附件；完整列表及 SHA-256 校验文件见 Release 页面。
 
 **Understand your network, not just test it.** 让网络故障变得可观察、可解释、可追踪。
 
