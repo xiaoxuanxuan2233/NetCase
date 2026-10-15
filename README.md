@@ -3,9 +3,9 @@
 | 平台 / Platform | 下载 / Download |
 | --- | --- |
 | Windows x64 | [EXE](https://github.com/xiaoxuanxuan2233/NetCase/releases/download/v0.1.0-preview.2/NetCase-0.1.0-preview.2-windows-x64.exe) |
-| macOS Apple Silicon | [ZIP](https://github.com/xiaoxuanxuan2233/NetCase/releases/download/v0.1.0-preview.2/NetCase-0.1.0-preview.2-macos-arm64.zip) |
-| macOS Intel | [ZIP](https://github.com/xiaoxuanxuan2233/NetCase/releases/download/v0.1.0-preview.2/NetCase-0.1.0-preview.2-macos-x64.zip) |
-| Linux x64 | [tar.gz](https://github.com/xiaoxuanxuan2233/NetCase/releases/download/v0.1.0-preview.2/NetCase-0.1.0-preview.2-linux-x64.tar.gz) |
+| macOS Apple Silicon | [DMG](https://github.com/xiaoxuanxuan2233/NetCase/releases/download/v0.1.0-preview.2/NetCase-0.1.0-preview.2-macos-arm64.dmg) |
+| macOS Intel | [DMG](https://github.com/xiaoxuanxuan2233/NetCase/releases/download/v0.1.0-preview.2/NetCase-0.1.0-preview.2-macos-x64.dmg) |
+| Linux x64 | [AppImage](https://github.com/xiaoxuanxuan2233/NetCase/releases/download/v0.1.0-preview.2/NetCase-0.1.0-preview.2-linux-x64.AppImage) |
 
 [English](README_EN.md)
 
@@ -18,14 +18,20 @@ NetCase is a local network troubleshooting tool for DNS, TCP, TLS, HTTP, Ping, a
 
 ## 运行方式
 
-当前版本：**v0.1.0-preview.2**。Windows 直接运行 EXE；macOS / Linux 完整解压后运行。无需安装 Python、Node.js 或 Docker。
+当前版本：**v0.1.0-preview.2**。无需安装 Python、Node.js 或 Docker。
 
 - **Windows**：双击下载的 EXE。
-- **macOS / Linux**：在终端运行 `NetCase/NetCase`。
+- **macOS**：打开 DMG，把 NetCase 拖入 Applications，再打开应用。
+- **Linux**：在文件属性中允许作为程序执行，再双击 AppImage；也可在终端运行：
 
-启动后会自动打开浏览器。程序只监听本机的 `127.0.0.1` 地址，退出程序后服务停止。Windows 单文件版会先解压内置组件，请等待浏览器打开；macOS / Linux 请保留完整的解压目录。
+  ```bash
+  chmod +x NetCase-0.1.0-preview.2-linux-x64.AppImage
+  ./NetCase-0.1.0-preview.2-linux-x64.AppImage
+  ```
 
-Windows 程序未签名，macOS 程序未经 Apple 公证。Linux 包以 Ubuntu 22.04 及更新的兼容 glibc 环境为目标。各压缩包的 SHA-256 校验文件位于 [Release 页面](https://github.com/xiaoxuanxuan2233/NetCase/releases/tag/v0.1.0-preview.2)。
+启动后会自动打开浏览器，服务只监听本机 `127.0.0.1`。macOS / Linux 会显示启动控制窗口，关闭它或点击“退出 NetCase”即可停止服务；关闭浏览器不会退出程序。Windows EXE 会先解压内置组件，请等待浏览器打开。
+
+Windows 程序未签名；macOS 应用使用临时签名，尚未完成 Developer ID 签名和 Apple 公证。Linux 包在 Ubuntu 22.04 上构建，需兼容的 glibc 和桌面环境；FUSE 不可用时可加 `--appimage-extract-and-run` 运行。各文件的 SHA-256 校验文件位于 [Release 页面](https://github.com/xiaoxuanxuan2233/NetCase/releases/tag/v0.1.0-preview.2)。
 
 ## 开始诊断
 
@@ -149,4 +155,4 @@ npm run build
 
 前端使用 React、TypeScript 和 Vite，后端使用 FastAPI、Pydantic、asyncio 与 SQLite/SQLAlchemy。网络检测、分析规则和报告导出分别放在独立模块中。
 
-[架构与 API](docs/ARCHITECTURE.md) · [模块学习指南](docs/LEARNING.md) · [贡献指南](CONTRIBUTING.md) · [安全说明](SECURITY.md) · [依赖与许可证](docs/DEPENDENCIES.md) · [更新记录](CHANGELOG.md) · [MIT License](LICENSE)
+[架构与 API](docs/ARCHITECTURE.md) · [模块学习指南](docs/LEARNING.md) · [打包说明](docs/NATIVE_PACKAGES.md) · [贡献指南](CONTRIBUTING.md) · [安全说明](SECURITY.md) · [依赖与许可证](docs/DEPENDENCIES.md) · [更新记录](CHANGELOG.md) · [MIT License](LICENSE)

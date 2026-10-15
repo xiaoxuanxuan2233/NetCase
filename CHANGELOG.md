@@ -7,6 +7,8 @@
 - Use the diagnosis DNS answers for the first HTTP connection; document redirect resolution conditions.
 - Publish updated Windows, Linux, and macOS portable packages.
 - Add a standalone Windows EXE download, verified from an isolated directory without adjacent support files.
+- Add macOS DMG downloads for Intel and Apple Silicon, and a Linux x64 AppImage.
+- Add a macOS/Linux desktop controller with explicit service start and exit, plus native GUI lifecycle checks.
 
 ## v0.1.0-preview.1
 

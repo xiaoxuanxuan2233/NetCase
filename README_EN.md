@@ -3,9 +3,9 @@
 | Platform / 平台 | Download / 下载 |
 | --- | --- |
 | Windows x64 | [EXE](https://github.com/xiaoxuanxuan2233/NetCase/releases/download/v0.1.0-preview.2/NetCase-0.1.0-preview.2-windows-x64.exe) |
-| macOS Apple Silicon | [ZIP](https://github.com/xiaoxuanxuan2233/NetCase/releases/download/v0.1.0-preview.2/NetCase-0.1.0-preview.2-macos-arm64.zip) |
-| macOS Intel | [ZIP](https://github.com/xiaoxuanxuan2233/NetCase/releases/download/v0.1.0-preview.2/NetCase-0.1.0-preview.2-macos-x64.zip) |
-| Linux x64 | [tar.gz](https://github.com/xiaoxuanxuan2233/NetCase/releases/download/v0.1.0-preview.2/NetCase-0.1.0-preview.2-linux-x64.tar.gz) |
+| macOS Apple Silicon | [DMG](https://github.com/xiaoxuanxuan2233/NetCase/releases/download/v0.1.0-preview.2/NetCase-0.1.0-preview.2-macos-arm64.dmg) |
+| macOS Intel | [DMG](https://github.com/xiaoxuanxuan2233/NetCase/releases/download/v0.1.0-preview.2/NetCase-0.1.0-preview.2-macos-x64.dmg) |
+| Linux x64 | [AppImage](https://github.com/xiaoxuanxuan2233/NetCase/releases/download/v0.1.0-preview.2/NetCase-0.1.0-preview.2-linux-x64.AppImage) |
 
 [简体中文](README.md)
 
@@ -18,14 +18,20 @@ NetCase 用来排查网站访问问题，分别检查 DNS、TCP、TLS 和 HTTP�
 
 ## Run NetCase
 
-Current release: **v0.1.0-preview.2**. Run the Windows EXE directly; extract the full archive on macOS / Linux. Python, Node.js, and Docker are not required for these packages.
+Current release: **v0.1.0-preview.2**. Python, Node.js, and Docker are not required for these packages.
 
 - **Windows:** open the downloaded EXE.
-- **macOS / Linux:** run `NetCase/NetCase` in Terminal.
+- **macOS:** open the DMG, drag NetCase into Applications, then launch it.
+- **Linux:** allow execution in the file properties, then double-click the AppImage, or use a terminal:
 
-NetCase opens your browser and listens only on `127.0.0.1`. Exiting the program stops the local service. The Windows EXE extracts its bundled components before opening the browser. On macOS / Linux, keep the entire extracted folder.
+  ```bash
+  chmod +x NetCase-0.1.0-preview.2-linux-x64.AppImage
+  ./NetCase-0.1.0-preview.2-linux-x64.AppImage
+  ```
 
-Windows binaries are unsigned; macOS binaries are not notarized. Linux packages target Ubuntu 22.04+ compatible glibc environments. SHA-256 checksum files are available on the [release page](https://github.com/xiaoxuanxuan2233/NetCase/releases/tag/v0.1.0-preview.2).
+NetCase opens your browser and listens only on `127.0.0.1`. On macOS / Linux, closing the desktop controller stops the service; closing the browser does not. The Windows EXE extracts its bundled components before opening the browser.
+
+Windows binaries are unsigned. macOS apps are ad-hoc signed, without Developer ID signing or Apple notarization. Linux packages are built on Ubuntu 22.04 and need compatible glibc and a desktop environment; add `--appimage-extract-and-run` if FUSE is unavailable. SHA-256 checksum files are available on the [release page](https://github.com/xiaoxuanxuan2233/NetCase/releases/tag/v0.1.0-preview.2).
 
 ## Run a diagnosis
 
@@ -149,4 +155,4 @@ Tests use mocks and local requests without depending on public network access. G
 
 The frontend uses React, TypeScript, and Vite. The backend uses FastAPI, Pydantic, asyncio, and SQLite/SQLAlchemy. Probes, analysis rules, and report exports live in separate modules.
 
-[Architecture and API](docs/ARCHITECTURE.md) · [Learning guide](docs/LEARNING.md) · [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md) · [Dependencies and licenses](docs/DEPENDENCIES.md) · [Changelog](CHANGELOG.md) · [MIT License](LICENSE)
+[Architecture and API](docs/ARCHITECTURE.md) · [Learning guide](docs/LEARNING.md) · [Native packages](docs/NATIVE_PACKAGES.md) · [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md) · [Dependencies and licenses](docs/DEPENDENCIES.md) · [Changelog](CHANGELOG.md) · [MIT License](LICENSE)

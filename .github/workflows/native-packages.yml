@@ -7,10 +7,11 @@ on:
         description: 'Publish verified assets (add new files to an existing prerelease)'
         type: boolean
         default: false
-      windows_only:
-        description: 'Build only the standalone Windows EXE'
-        type: boolean
-        default: false
+      platforms:
+        description: 'Platforms to build'
+        type: choice
+        options: [all, windows, macos-linux]
+        default: all
 
 permissions:
   contents: read
@@ -20,7 +21,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        runner: ${{ fromJSON(inputs.windows_only && '["windows-latest"]' || '["windows-latest", "ubuntu-22.04", "macos-15-intel", "macos-15"]') }}
+        runner: ${{ fromJSON(inputs.platforms == 'windows' && '["windows-latest"]' || inputs.platforms == 'macos-linux' && '["ubuntu-22.04", "macos-15-intel", "macos-15"]' || '["windows-latest", "ubuntu-22.04", "macos-15-intel", "macos-15"]') }}
     runs-on: ${{ matrix.runner }}
     timeout-minutes: 35
     steps:
@@ -37,8 +38,8 @@ jobs:
         working-directory: backend
         run: |
           uv sync --locked
-          uv run --no-sync ruff check app tests ../packaging
-          uv run --no-sync ruff format --check app tests ../packaging
+          uv run --no-sync ruff check app tests ../packaging desktop.py
+          uv run --no-sync ruff format --check app tests ../packaging desktop.py
           uv run --no-sync pytest -q
       - name: Frontend test and build
         working-directory: frontend
@@ -49,6 +50,12 @@ jobs:
           npm run build
       - name: Install native packager
         run: uv pip install --python backend/.venv pyinstaller==6.22.3
+      - name: Prepare Linux desktop tools
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends -y xvfb xauth desktop-file-utils
+          python packaging/fetch_appimage_tools.py
       - name: Build, launch and verify local UI
         working-directory: backend
         run: uv run --no-sync python ../packaging/build.py
@@ -78,7 +85,7 @@ jobs:
         run: |
           release_notes="$RUNNER_TEMP/netcase-release-notes.md"
           cp docs/RELEASE_NOTES.md "$release_notes"
-          printf '\nWindows EXE build source: `%s`.\n' "$GITHUB_SHA" >> "$release_notes"
+          printf '\nNative package build source: `%s`.\n' "$GITHUB_SHA" >> "$release_notes"
           if gh release view v0.1.0-preview.2 >/dev/null 2>&1; then
             gh release upload v0.1.0-preview.2 release-dist/*
             gh release edit v0.1.0-preview.2 --notes-file "$release_notes"

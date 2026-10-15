@@ -15,7 +15,7 @@ jobs:
         run: uv sync --locked
       - name: Lint and format
         working-directory: backend
-        run: uv run --no-sync ruff check app tests ../packaging && uv run --no-sync ruff format --check app tests ../packaging
+        run: uv run --no-sync ruff check app tests ../packaging desktop.py && uv run --no-sync ruff format --check app tests ../packaging desktop.py
       - name: Tests
         working-directory: backend
         run: uv run --no-sync pytest -q
