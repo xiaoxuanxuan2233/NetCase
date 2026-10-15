@@ -1,51 +1,149 @@
 # NetCase
 
-[Download Windows x64](https://github.com/xiaoxuanxuan2233/NetCase/releases/download/v0.1.0-preview.2/NetCase-0.1.0-preview.2-windows-x64.zip) · [All platform packages](https://github.com/xiaoxuanxuan2233/NetCase/releases/tag/v0.1.0-preview.2)
+**[Download for Windows](https://github.com/xiaoxuanxuan2233/NetCase/releases/download/v0.1.0-preview.2/NetCase-0.1.0-preview.2-windows-x64.zip)** · [All downloads](https://github.com/xiaoxuanxuan2233/NetCase/releases/tag/v0.1.0-preview.2) · [简体中文](README.md)
 
-Other platforms and SHA-256 checksums are on the [release page](https://github.com/xiaoxuanxuan2233/NetCase/releases/tag/v0.1.0-preview.2).
+**Understand your network, not just test it.**  
+*看清网络问题出在哪一步。*
 
-**Understand your network, not just test it.** A local-first, single-target network diagnosis workspace with evidence-based Chinese explanations.
+NetCase is a local network troubleshooting tool for DNS, TCP, TLS, HTTP, Ping, and traceroute. It provides Chinese explanations, diagnosis history, comparisons, and shareable reports. No account or cloud service is required.
 
-## Features
+NetCase 用来排查网站访问问题，分别检查 DNS、TCP、TLS 和 HTTP，并给出中文说明。支持 Ping、路由追踪、历史对比和报告导出。无需注册账号，诊断记录保存在本机。
 
-Dashboard with history metrics and empty states; Quick / Full / Custom DNS, TCP, TLS, HTTP, Ping and traceroute checks; progress, conclusions, evidence, history filters, two-record comparison, notes, theme and timeout settings, local deletion, and redacted Markdown / JSON / HTML reports. Public DNS and local-network probing require explicit user selection. Imported JSON reports are marked as imported.
+## Download and run
 
-DNS variance is not proof of poisoning; failed TCP is not proof of firewall filtering. HTTP 403/429/5xx means an HTTP response was received. Conclusions attach evidence and next steps.
+Current release: **v0.1.0-preview.2**. Extract the entire archive before running. Python, Node.js, and Docker are not required for these packages.
 
-## Portable desktop packages
+| Platform | Download | Launch |
+| --- | --- | --- |
+| Windows x64 | [ZIP](https://github.com/xiaoxuanxuan2233/NetCase/releases/download/v0.1.0-preview.2/NetCase-0.1.0-preview.2-windows-x64.zip) | Open `NetCase/NetCase.exe` |
+| macOS Apple Silicon | [ZIP](https://github.com/xiaoxuanxuan2233/NetCase/releases/download/v0.1.0-preview.2/NetCase-0.1.0-preview.2-macos-arm64.zip) | Run `NetCase/NetCase` in Terminal |
+| macOS Intel | [ZIP](https://github.com/xiaoxuanxuan2233/NetCase/releases/download/v0.1.0-preview.2/NetCase-0.1.0-preview.2-macos-x64.zip) | Run `NetCase/NetCase` in Terminal |
+| Linux x64 | [tar.gz](https://github.com/xiaoxuanxuan2233/NetCase/releases/download/v0.1.0-preview.2/NetCase-0.1.0-preview.2-linux-x64.tar.gz) | Run `NetCase/NetCase` in Terminal |
 
-Download the full ZIP/tar.gz folder from the release page. Windows: extract everything and launch `NetCase/NetCase.exe`; macOS or Linux: run `NetCase/NetCase` in Terminal. Python, Node.js and Docker are not required for the portable package. The local UI opens in your browser on an automatically chosen loopback port. The Windows binary is unsigned, macOS is not notarized, and Linux initially targets a compatible Ubuntu 22.04+ glibc environment. The platform package self-test checks the local API and UI; real network behavior still needs platform-specific acceptance.
+NetCase opens your browser and listens only on `127.0.0.1`. Exiting the program stops the local service. Keep the full extracted folder, including the `_internal` directory next to the executable.
 
-## Requirements and start from source
+Windows binaries are unsigned; macOS binaries are not notarized. Linux packages target Ubuntu 22.04+ compatible glibc environments. SHA-256 checksum files are available on the [release page](https://github.com/xiaoxuanxuan2233/NetCase/releases/tag/v0.1.0-preview.2).
 
-Python 3.12+, [uv](https://docs.astral.sh/uv/getting-started/installation/), Node.js 22.12+ and npm. First-time dependency installation requires internet. Docker, cloud services, and accounts are not required.
+## Run a diagnosis
 
-Windows PowerShell, from the repository root:
+1. Enter a domain, IP address, or full URL, such as `example.com`.
+2. Choose a mode and start the diagnosis.
+3. Read the explanation, then expand metrics and evidence. Add notes, export a report, or compare two records in History.
+
+| Mode | Checks |
+| --- | --- |
+| Quick | DNS, TCP, TLS |
+| Full | Adds HTTP, Ping, and traceroute |
+| Custom | Select modules; domain-based connection checks also run DNS |
+
+The system DNS resolver is used by default. Public resolver comparisons and local-address probing require explicit selection.
+
+## What it checks
+
+| Module | Results |
+| --- | --- |
+| DNS | A, AAAA, CNAME records, response times, errors, and resolver differences |
+| TCP | Connectivity, timing, and errors for individual IPv4 / IPv6 addresses |
+| TLS | Handshake, protocol version, certificate dates, and validation errors |
+| HTTP | Status, redirects, final URL, selected headers, and request time |
+| Ping | ICMP replies, latency, and packet loss |
+| Traceroute | Hops and timeouts |
+
+History supports target and time filters and two-record comparisons. Reports are available as Markdown, JSON, and HTML. Settings control the theme, timeout, and default modules.
+
+## Reading the results
+
+Each module checks a different step. If DNS and TCP succeed but TLS fails, the HTTPS connection was not established. HTTP 503 means a server response was received and the website's service state needs further investigation.
+
+Conclusions distinguish observations (确认), supported possibilities (较可能), and insufficient evidence (无法判断). Different DNS answers can come from CDNs or load balancing. A timeout alone does not prove firewall filtering, and a silent intermediate hop does not mean the destination is unreachable.
+
+Initial HTTP requests use the addresses from the diagnosis's DNS results. Redirects to another hostname are resolved and checked separately. When comparing records, consider the network, resolver, address family, port, and time of each check.
+
+## Data and privacy
+
+History, notes, favorites, drafts, and settings stay in a local SQLite database. There is no telemetry or automatic upload.
+
+| Platform | Default database |
+| --- | --- |
+| Windows | `%LOCALAPPDATA%\NetCase\netcase.db` |
+| macOS / Linux | `~/.local/share/netcase/netcase.db`, honoring `XDG_DATA_HOME` |
+
+Set `NETCASE_DATA_DIR` to change the directory. Settings provides data export and history deletion.
+
+Exports remove or replace URL queries, common sensitive fields, and non-public IP addresses. Review targets and notes before sharing. **Redaction is irreversible:** importing JSON stores only the redacted snapshot and marks it as imported. Hidden IP targets become `redacted.invalid`; importing does not restore the original data or run a new diagnosis.
+
+## Run from source
+
+Requires Python **3.12+**, [uv](https://docs.astral.sh/uv/getting-started/installation/), Node.js **22.12+**, and npm. Installing dependencies for the first time requires internet access.
+
+Download or clone the source, then run from the repository root:
+
+**Windows PowerShell**
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\scripts\start.ps1
 ```
 
-macOS/Linux:
+**macOS / Linux**
 
 ```bash
 bash scripts/start.sh
 ```
 
-Open `http://127.0.0.1:8000`. Pass `-Port 8001` on Windows or `8001` on macOS/Linux to change the port. Development: run `uv sync --locked` and `uv run uvicorn app.main:create_app --factory --host 127.0.0.1 --port 8000 --no-access-log` from `backend`, then `npm ci && npm run dev` from `frontend` and open port 5173. Access logging is disabled to avoid writing URL query strings to terminal logs.
+Open `http://127.0.0.1:8000`. If the port is in use, add `-Port 8001` on Windows or run `bash scripts/start.sh 8001` on macOS / Linux.
 
-Try `example.com` with Quick Check to observe system DNS, TCP 443 and strict TLS validation. Full Diagnosis adds HTTP, Ping and traceroute. Only opt in to probing a local address you are authorized to diagnose.
+<details>
+<summary>Development and test commands</summary>
 
-## Storage and privacy
+Backend:
 
-SQLite database: `%LOCALAPPDATA%\NetCase\netcase.db` on Windows; `~/.local/share/netcase/netcase.db` on macOS/Linux (honors `XDG_DATA_HOME`). Override the directory with `NETCASE_DATA_DIR`. No telemetry, account, automatic uploads or default third-party resolver. Reports redact URL queries, common sensitive fields, and non-public IPs, but must still be reviewed before sharing.
+```bash
+cd backend
+uv sync --locked
+uv run uvicorn app.main:create_app --factory --host 127.0.0.1 --port 8000 --no-access-log
+```
 
-## Testing
+Frontend, in a separate terminal:
 
-From `backend`: `uv sync --locked`, then `uv run --no-sync ruff check app tests`, `uv run --no-sync ruff format --check app tests`, `uv run --no-sync pytest -q`. From `frontend`: `npm ci`, `npm run lint`, `npm test`, `npm run build`.
+```bash
+cd frontend
+npm ci
+npm run dev
+```
 
-Tests use mocks instead of public network probes. HTTP reads HTTP/1.1 response headers and follows at most five redirects. DNS uses a bounded built-in UDP/TCP resolver; the system nameserver configuration varies by OS. Ping and traceroute depend on system tools and ICMP permissions. This release does not include subnet scanning, bulk port checks, continuous monitoring, AI, or MCP.
+Open `http://127.0.0.1:5173`. Vite forwards `/api` requests to the local backend.
 
-## Project
+Backend checks:
 
-Architecture and API: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md). Contributions: [CONTRIBUTING.md](CONTRIBUTING.md). Security: [SECURITY.md](SECURITY.md). Changelog: [CHANGELOG.md](CHANGELOG.md). License: [LICENSE](LICENSE).
+```bash
+cd backend
+uv run --no-sync ruff check app tests
+uv run --no-sync ruff format --check app tests
+uv run --no-sync pytest -q
+```
+
+Frontend checks:
+
+```bash
+cd frontend
+npm run lint
+npm test
+npm run build
+```
+
+Tests use mocks and local requests without depending on public network access. GitHub Actions runs the lint, tests, type check, and build.
+
+</details>
+
+## Current limits
+
+- One target per diagnosis, up to two concurrent jobs, and a 90-second limit per job.
+- HTTP checks HTTP/1.1 response headers and follows at most five redirects. Timing ends at the response headers; it does not provide per-stage timings or simulate a browser.
+- Ping and traceroute depend on system tools and permissions. Behavior varies by operating system and network.
+- Periodic monitoring, subnet scanning, bulk port checks, AI analysis, and MCP are not included.
+
+## Development and contributions
+
+The frontend uses React, TypeScript, and Vite. The backend uses FastAPI, Pydantic, asyncio, and SQLite/SQLAlchemy. Probes, analysis rules, and report exports live in separate modules.
+
+[Architecture and API](docs/ARCHITECTURE.md) · [Learning guide](docs/LEARNING.md) · [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md) · [Dependencies and licenses](docs/DEPENDENCIES.md) · [Changelog](CHANGELOG.md) · [MIT License](LICENSE)

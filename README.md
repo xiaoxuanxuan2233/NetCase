@@ -1,109 +1,149 @@
 # NetCase
 
-[⬇ Windows x64 软件包直链](https://github.com/xiaoxuanxuan2233/NetCase/releases/download/v0.1.0-preview.2/NetCase-0.1.0-preview.2-windows-x64.zip) · [其他平台下载与发布说明](https://github.com/xiaoxuanxuan2233/NetCase/releases/tag/v0.1.0-preview.2)
+**[下载 Windows 版 · Download for Windows](https://github.com/xiaoxuanxuan2233/NetCase/releases/download/v0.1.0-preview.2/NetCase-0.1.0-preview.2-windows-x64.zip)** · [全部下载 / All downloads](https://github.com/xiaoxuanxuan2233/NetCase/releases/tag/v0.1.0-preview.2) · [English](README_EN.md)
 
-其他系统的下载地址和 SHA-256 校验文件见 [Release 页面](https://github.com/xiaoxuanxuan2233/NetCase/releases/tag/v0.1.0-preview.2)。
+**看清网络问题出在哪一步。**  
+*Understand your network, not just test it.*
 
-**Understand your network, not just test it.** 让网络故障变得可观察、可解释、可追踪。
+NetCase 用来排查网站访问问题，分别检查 DNS、TCP、TLS 和 HTTP，并给出中文说明。支持 Ping、路由追踪、历史对比和报告导出。无需注册账号，诊断记录保存在本机。
 
-NetCase 是本地运行的单目标网络诊断工具。它按 DNS、TCP、TLS、HTTP、Ping 和路由追踪呈现实际测到的证据，再用可阅读的中文规则解释结果。无需账号、云服务或 Docker；默认只监听 `127.0.0.1`。
+NetCase is a local network troubleshooting tool for DNS, TCP, TLS, HTTP, Ping, and traceroute. It provides Chinese explanations, diagnosis history, comparisons, and shareable reports. No account or cloud service is required.
 
-## 它解决什么问题
+## 下载与运行
 
-一个网页打不开时，“能不能 Ping 通”只回答了很小一部分。NetCase 分别记录 DNS 能否给出地址、指定端口能否建立 TCP、TLS 证书和握手是否通过、HTTP 有没有返回状态码。它把测量与推测分开：你可以看到第一条通俗结论，展开关键耗时与地址族，最后查看原始技术证据。适合个人用户、网络学习者和 IT 运维人员在自己的设备上排查一个明确目标。
-
-例如 DNS 成功、TCP 可达、TLS 失败时，报告会说明 HTTPS 安全连接未成功，并给出证书或协议方向的排查建议；它不会未经证据就断言有人攻击。历史对比会显示 DNS 解析器、网络备注、地址族、端口与时间等条件差异，方便你观察更换网络前后的变化。
-
-界面包含概览、诊断配置、进度、结果、历史、两次对比与设置，支持浅色和深色主题。
-
-## 下载桌面软件
-
-便携版解压即可运行，无需另外安装 Python、Node.js 或 Docker。不要只把单个 EXE 从压缩包中取出；它需要旁边的 `_internal` 目录。首次启动会打开默认浏览器，后台只监听自动分配的 `127.0.0.1` 端口。关闭程序进程即停止服务。
+当前版本：**v0.1.0-preview.2**。下载后完整解压即可运行，无需安装 Python、Node.js 或 Docker。
 
 | 系统 | 下载 | 启动方式 |
 | --- | --- | --- |
-| Windows x64 | [ZIP 直链](https://github.com/xiaoxuanxuan2233/NetCase/releases/download/v0.1.0-preview.2/NetCase-0.1.0-preview.2-windows-x64.zip) | 完整解压，双击 `NetCase/NetCase.exe` |
-| macOS Intel | [ZIP 直链](https://github.com/xiaoxuanxuan2233/NetCase/releases/download/v0.1.0-preview.2/NetCase-0.1.0-preview.2-macos-x64.zip) | 完整解压，在终端运行 `NetCase/NetCase` |
-| macOS Apple Silicon | [ZIP 直链](https://github.com/xiaoxuanxuan2233/NetCase/releases/download/v0.1.0-preview.2/NetCase-0.1.0-preview.2-macos-arm64.zip) | 完整解压，在终端运行 `NetCase/NetCase` |
-| Linux x64 | [tar.gz 直链](https://github.com/xiaoxuanxuan2233/NetCase/releases/download/v0.1.0-preview.2/NetCase-0.1.0-preview.2-linux-x64.tar.gz) | 解压后运行 `NetCase/NetCase` |
+| Windows x64 | [ZIP](https://github.com/xiaoxuanxuan2233/NetCase/releases/download/v0.1.0-preview.2/NetCase-0.1.0-preview.2-windows-x64.zip) | 双击 `NetCase/NetCase.exe` |
+| macOS Apple Silicon | [ZIP](https://github.com/xiaoxuanxuan2233/NetCase/releases/download/v0.1.0-preview.2/NetCase-0.1.0-preview.2-macos-arm64.zip) | 在终端运行 `NetCase/NetCase` |
+| macOS Intel | [ZIP](https://github.com/xiaoxuanxuan2233/NetCase/releases/download/v0.1.0-preview.2/NetCase-0.1.0-preview.2-macos-x64.zip) | 在终端运行 `NetCase/NetCase` |
+| Linux x64 | [tar.gz](https://github.com/xiaoxuanxuan2233/NetCase/releases/download/v0.1.0-preview.2/NetCase-0.1.0-preview.2-linux-x64.tar.gz) | 在终端运行 `NetCase/NetCase` |
 
-这是便携式程序文件夹，不是安装器。Windows 程序未签名，macOS 程序未经 Apple 公证；Linux 初始目标为 Ubuntu 22.04 或更新的兼容 glibc 环境。各平台构建会检查本地 API 和首页能否启动。
+启动后会自动打开浏览器。程序只监听本机的 `127.0.0.1` 地址，退出程序后服务停止。请保留解压后的整个文件夹，尤其是 EXE 旁的 `_internal` 目录。
 
-Release 附件同时提供每个压缩包的 `.sha256` 文件，可用 Windows 的 `Get-FileHash` 或 macOS/Linux 的 `shasum -a 256` 核对下载文件。
+Windows 程序未签名，macOS 程序未经 Apple 公证。Linux 包以 Ubuntu 22.04 及更新的兼容 glibc 环境为目标。各压缩包的 SHA-256 校验文件位于 [Release 页面](https://github.com/xiaoxuanxuan2233/NetCase/releases/tag/v0.1.0-preview.2)。
 
-## 功能
+## 开始诊断
 
-- **概览**：历史统计、最近检测、常用目标与草稿；无记录时显示空状态。
-- **新建诊断**：Quick / Full / Custom，系统 DNS 默认，公开 DNS 显式选择，本地目标显式允许；异步进度和有限时长。
-- **结果**：中文解释、分模块指标、原始证据、用户备注。
-- **历史**：域名与时间筛选、详情、删除、两次记录对比，提示网络环境和检测条件差异。
-- **设置**：主题、超时、默认模式与模块、脱敏 JSON 导出、清空历史、存储位置说明。
-- **报告**：导出 Markdown、JSON、HTML；JSON 导入会标记为“用户导入”。分享前请检查脱敏结果。
+1. 输入域名、IP 或完整 URL，例如 `example.com`。
+2. 选择检测模式，点击“开始诊断”。
+3. 查看结果说明，展开详细指标和原始证据。检测完成后可添加备注、导出报告，或在历史页面选择两条记录比较。
 
-检测失败不会自动归因为封锁、污染或中间人攻击。HTTP 403/429/5xx 表示已收到服务端响应；中间路由节点不回应也不能证明终点不可达。
+| 模式 | 检测内容 |
+| --- | --- |
+| 快速检查 · Quick | DNS、TCP、TLS |
+| 完整诊断 · Full | 加上 HTTP、Ping 和路由追踪 |
+| 自定义 · Custom | 按需选择模块；域名连接检测会先解析 DNS |
 
-## 从源码运行（开发者）
+默认使用系统 DNS。需要比较公开 DNS 时再手动选择；检测路由器等私网设备时，需勾选“允许本地目标”。
 
-Python **3.12+**、[uv](https://docs.astral.sh/uv/getting-started/installation/)、Node.js **22.12+** 与 npm；第一次安装依赖需要联网。无需数据库服务器。打开本地界面无需浏览器插件。
+## 能查什么
 
-### Windows（PowerShell）
+| 检查项 | 主要结果 |
+| --- | --- |
+| DNS | A、AAAA、CNAME 记录，响应时间与错误类型，解析器之间的结果差异 |
+| TCP | 指定端口是否可连接，各 IPv4 / IPv6 地址的耗时与错误 |
+| TLS | 握手结果、协议版本、证书有效期与验证失败原因 |
+| HTTP | 状态码、重定向、最终地址、基础响应头和请求耗时 |
+| Ping | ICMP 回应、延迟与丢包情况 |
+| 路由追踪 | 沿途跳点与超时信息 |
+
+历史记录可按目标和时间筛选，也可以选取两次检测进行比较。报告支持 Markdown、JSON 和 HTML。设置中可以切换深浅色主题、调整超时和默认检测模块。
+
+## 怎样理解结果
+
+DNS、TCP、TLS 和 HTTP 分别检查网站访问的不同环节。DNS 解析成功、TCP 能连接，但 TLS 失败，说明 HTTPS 安全连接未能建立；收到 HTTP 503 则说明服务端已经回应，需要进一步检查网站服务状态。
+
+结论中的“确认”指有直接检测结果支持，“较可能”指根据结果推测的原因，“无法判断”指证据不足。DNS 返回不同 IP 可能来自 CDN 或负载均衡；单凭超时无法判断是否被防火墙拦截，中间路由节点不回应也不代表终点不可达。
+
+HTTP 初始请求沿用本次 DNS 检测的地址，跨主机重定向会重新解析并校验。比较记录时，请同时留意网络、解析器、地址族、端口和检测时间。
+
+## 数据与隐私
+
+历史、备注、收藏、草稿和设置保存在本机 SQLite 数据库中。没有遥测，也不会自动上传诊断记录。
+
+| 系统 | 默认数据库位置 |
+| --- | --- |
+| Windows | `%LOCALAPPDATA%\NetCase\netcase.db` |
+| macOS / Linux | `~/.local/share/netcase/netcase.db`，遵循 `XDG_DATA_HOME` |
+
+可通过 `NETCASE_DATA_DIR` 更改目录，或在设置中导出数据、清理历史。
+
+导出时会删除或替换 URL 查询串、常见敏感字段和非公网 IP，分享前仍需检查目标和备注。**脱敏不可逆**：重新导入 JSON 只保存脱敏后的内容，并标为“用户导入”；隐藏的 IP 目标以 `redacted.invalid` 占位，不会恢复原始信息或重新检测。
+
+## 从源码运行
+
+需要 Python **3.12+**、[uv](https://docs.astral.sh/uv/getting-started/installation/)、Node.js **22.12+** 和 npm。首次安装依赖需要联网。
+
+下载或克隆源码后，在项目根目录执行：
+
+**Windows PowerShell**
 
 ```powershell
-# 在项目根目录
 powershell -ExecutionPolicy Bypass -File .\scripts\start.ps1
-# 浏览器打开 http://127.0.0.1:8000
 ```
 
-如果 PowerShell 中已允许脚本执行，可运行 `.\scripts\start.ps1`。默认端口占用时使用 `-Port 8001`。Windows 的 `ping` 和 `tracert` 应为系统自带工具；受操作系统权限或防火墙影响，ICMP 可能不可用。
-
-### macOS / Linux
+**macOS / Linux**
 
 ```bash
 bash scripts/start.sh
-# 浏览器打开 http://127.0.0.1:8000
 ```
 
-可将端口作为参数传给 `start.sh`，例如 `bash scripts/start.sh 8001`。Ping / traceroute 依赖系统工具；不存在或无权限时模块会返回不可用提示。
+启动后访问 `http://127.0.0.1:8000`。端口被占用时，Windows 脚本可加 `-Port 8001`，macOS / Linux 可运行 `bash scripts/start.sh 8001`。
 
-**开发模式**：在 `backend` 运行 `uv sync --locked` 和 `uv run uvicorn app.main:create_app --factory --host 127.0.0.1 --port 8000 --no-access-log`；另在 `frontend` 运行 `npm ci`、`npm run dev`，打开 `http://127.0.0.1:5173`。Vite 只绑定本机，代理 `/api` 到 8000。启动脚本会构建前端，然后由 FastAPI 同端口提供页面。禁用 HTTP access log 可避免把搜索条件等 URL 查询串写进终端日志。
+<details>
+<summary>开发模式与测试命令</summary>
 
-## 第一次使用
-
-输入 `example.com`，选择“快速检查”，点击“开始诊断”。DNS 查询系统解析器，TCP 检查 443 端口，TLS 严格验证证书。选择“完整诊断”才会加入 HTTP、Ping 和路由追踪。若要诊断私网设备，明确勾选本地目标允许；只诊断你有权访问的设备。公开 DNS 和对比 DNS 只有主动选中才查询第三方。
-
-结果中的“确认”只指相关观测已获得证据；“较可能”是有依据的可能原因；“无法判断”保留不确定性。HTTP 耗时截至收到响应头，不包括正文，也不提供分阶段耗时。
-
-## 本地数据与隐私
-
-Windows 默认 `%LOCALAPPDATA%\NetCase\netcase.db`；macOS/Linux 默认 `~/.local/share/netcase/netcase.db`，遵循 `XDG_DATA_HOME`。`NETCASE_DATA_DIR` 可更改目录。SQLite 保存记录、收藏、草稿、设置；无遥测、无账号、无自动上传。浏览器另缓存主题，方便首屏配色。导出的报告过滤 URL 查询串、敏感字段与非公网 IP，但备注及公开目标可能仍敏感，分享前检查。
-
-JSON 导出是脱敏快照，可重新导入为“用户导入”记录；被删除的查询串、凭据和被替换的非公网 IP **不可逆，导入不会恢复或重新检测**。若目标本身是非公网 IP，导出中使用 `redacted.invalid` 占位；保留原始记录请在本机数据库中管理。HTTP 首次连接沿用该次 DNS 检测的地址，跨主机重定向会重新解析和校验，因此后续响应可能涉及不同条件；报告会标注这一点。
-
-## 架构与范围
-
-`frontend/` 是 React、TypeScript、Vite；`backend/app/` 是 FastAPI、Pydantic、asyncio、SQLite/SQLAlchemy。`diagnostics/` 只负责测量，`analyzers/` 负责规则，`reports/` 负责脱敏；前端调用同源 `/api`。设计与 API 详见 [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)，安全边界见 [SECURITY.md](SECURITY.md)。
-
-本版不做周期监控、网段扫描、批量端口扫描、AI 分析或 MCP。DNS 使用自带的有限 UDP/TCP 查询实现，不依赖 dnspython；系统 DNS 发现和解析器行为仍需在不同网络环境下验证。HTTP 仅实现 HTTP/1.1 响应头探测（不下载正文），最多五次重定向；没有浏览器行为模拟。每次最多两个并行任务，任务总上限 90 秒。
-
-想理解每个模块的代码与网络原理，可以按 [docs/LEARNING.md](docs/LEARNING.md) 逐步阅读。依赖许可证的初步检查见 [docs/DEPENDENCIES.md](docs/DEPENDENCIES.md)。
-
-## 测试
+后端：
 
 ```bash
 cd backend
 uv sync --locked
+uv run uvicorn app.main:create_app --factory --host 127.0.0.1 --port 8000 --no-access-log
+```
+
+在另一个终端启动前端：
+
+```bash
+cd frontend
+npm ci
+npm run dev
+```
+
+访问 `http://127.0.0.1:5173`。Vite 会将 `/api` 请求转发到本地后端。
+
+检查后端：
+
+```bash
+cd backend
 uv run --no-sync ruff check app tests
 uv run --no-sync ruff format --check app tests
 uv run --no-sync pytest -q
-cd ../frontend
-npm ci
+```
+
+检查前端：
+
+```bash
+cd frontend
 npm run lint
 npm test
 npm run build
 ```
 
-单元测试以 Mock 和本地 ASGI 请求为主，不依赖公网。CI 在 GitHub Actions 执行同等检查。真实网络与系统 ICMP 的差异需在目标操作系统手工验证。
+测试主要使用 Mock 和本地请求，不依赖外网。GitHub Actions 执行相同的 lint、测试、类型检查和构建。
 
-## 后续与贡献
+</details>
 
-后续计划包括 Windows/macOS 实机测试、延迟趋势和 DNS 变化提醒。贡献前阅读 [CONTRIBUTING.md](CONTRIBUTING.md)，安全问题请参阅 [SECURITY.md](SECURITY.md)。许可证见 [LICENSE](LICENSE)。[English README](README_EN.md)。
+## 当前限制
+
+- 每次诊断一个目标，最多同时运行两项任务，单项任务最长 90 秒。
+- HTTP 目前只检查 HTTP/1.1 响应头，最多跟随五次重定向；耗时截至收到响应头，不提供分阶段耗时，也不模拟浏览器。
+- Ping 和路由追踪依赖系统工具与权限；不同操作系统和网络环境下的行为可能不同。
+- 暂不支持周期监控、网段扫描、批量端口检测、AI 分析或 MCP。
+
+## 开发与贡献
+
+前端使用 React、TypeScript 和 Vite，后端使用 FastAPI、Pydantic、asyncio 与 SQLite/SQLAlchemy。网络检测、分析规则和报告导出分别放在独立模块中。
+
+[架构与 API](docs/ARCHITECTURE.md) · [模块学习指南](docs/LEARNING.md) · [贡献指南](CONTRIBUTING.md) · [安全说明](SECURITY.md) · [依赖与许可证](docs/DEPENDENCIES.md) · [更新记录](CHANGELOG.md) · [MIT License](LICENSE)
