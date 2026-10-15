@@ -1,6 +1,13 @@
 # NetCase
 
-**[下载 Windows 版 · Download for Windows](https://github.com/xiaoxuanxuan2233/NetCase/releases/download/v0.1.0-preview.2/NetCase-0.1.0-preview.2-windows-x64.zip)** · [全部下载 / All downloads](https://github.com/xiaoxuanxuan2233/NetCase/releases/tag/v0.1.0-preview.2) · [English](README_EN.md)
+| 平台 / Platform | 下载 / Download |
+| --- | --- |
+| Windows x64 | [ZIP](https://github.com/xiaoxuanxuan2233/NetCase/releases/download/v0.1.0-preview.2/NetCase-0.1.0-preview.2-windows-x64.zip) |
+| macOS Apple Silicon | [ZIP](https://github.com/xiaoxuanxuan2233/NetCase/releases/download/v0.1.0-preview.2/NetCase-0.1.0-preview.2-macos-arm64.zip) |
+| macOS Intel | [ZIP](https://github.com/xiaoxuanxuan2233/NetCase/releases/download/v0.1.0-preview.2/NetCase-0.1.0-preview.2-macos-x64.zip) |
+| Linux x64 | [tar.gz](https://github.com/xiaoxuanxuan2233/NetCase/releases/download/v0.1.0-preview.2/NetCase-0.1.0-preview.2-linux-x64.tar.gz) |
+
+[English](README_EN.md)
 
 **看清网络问题出在哪一步。**  
 *Understand your network, not just test it.*
@@ -9,16 +16,12 @@ NetCase 用来排查网站访问问题，分别检查 DNS、TCP、TLS 和 HTTP�
 
 NetCase is a local network troubleshooting tool for DNS, TCP, TLS, HTTP, Ping, and traceroute. It provides Chinese explanations, diagnosis history, comparisons, and shareable reports. No account or cloud service is required.
 
-## 下载与运行
+## 运行方式
 
 当前版本：**v0.1.0-preview.2**。下载后完整解压即可运行，无需安装 Python、Node.js 或 Docker。
 
-| 系统 | 下载 | 启动方式 |
-| --- | --- | --- |
-| Windows x64 | [ZIP](https://github.com/xiaoxuanxuan2233/NetCase/releases/download/v0.1.0-preview.2/NetCase-0.1.0-preview.2-windows-x64.zip) | 双击 `NetCase/NetCase.exe` |
-| macOS Apple Silicon | [ZIP](https://github.com/xiaoxuanxuan2233/NetCase/releases/download/v0.1.0-preview.2/NetCase-0.1.0-preview.2-macos-arm64.zip) | 在终端运行 `NetCase/NetCase` |
-| macOS Intel | [ZIP](https://github.com/xiaoxuanxuan2233/NetCase/releases/download/v0.1.0-preview.2/NetCase-0.1.0-preview.2-macos-x64.zip) | 在终端运行 `NetCase/NetCase` |
-| Linux x64 | [tar.gz](https://github.com/xiaoxuanxuan2233/NetCase/releases/download/v0.1.0-preview.2/NetCase-0.1.0-preview.2-linux-x64.tar.gz) | 在终端运行 `NetCase/NetCase` |
+- **Windows**：双击 `NetCase/NetCase.exe`。
+- **macOS / Linux**：在终端运行 `NetCase/NetCase`。
 
 启动后会自动打开浏览器。程序只监听本机的 `127.0.0.1` 地址，退出程序后服务停止。请保留解压后的整个文件夹，尤其是 EXE 旁的 `_internal` 目录。
 
