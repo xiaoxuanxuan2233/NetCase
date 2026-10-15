@@ -1,5 +1,9 @@
 # NetCase v0.1.0 Preview 2
 
+Windows 版现提供独立 EXE，下载后双击即可运行，不需要解压文件夹或另外安装 Python。启动时会先解压内置组件，然后打开本地界面。macOS 和 Linux 继续使用下方的压缩包。
+
+The Windows download is now a standalone EXE: download and run it directly. It extracts its bundled components at startup and opens the local web UI. macOS and Linux downloads remain folder archives.
+
 Preview 2 fixes three issues from Preview 1: custom TLS checks now respect the local-address opt-in; redacted JSON reports can be imported again; and the first HTTP connection uses the DNS addresses found in the same diagnosis. Cross-host redirects are resolved and checked separately. Use this version instead of Preview 1.
 
 NetCase is a local-first, single-target network troubleshooting workspace. Enter a domain, IP address or HTTP(S) URL to see DNS, TCP, TLS, HTTP and optional ICMP evidence with Chinese explanations. No account, telemetry or cloud server is required.
@@ -8,12 +12,12 @@ NetCase is a local-first, single-target network troubleshooting workspace. Enter
 
 | Platform | File suffix | Start |
 | --- | --- | --- |
-| Windows x64 | `windows-x64.zip` | Extract **all** files, double-click `NetCase.exe` in the `NetCase` directory. |
+| Windows x64 | `windows-x64.exe` | Download the EXE and double-click it. |
 | macOS Intel | `macos-x64.zip` | Extract, run `NetCase/NetCase` from Terminal. |
 | macOS Apple Silicon | `macos-arm64.zip` | Extract, run `NetCase/NetCase` from Terminal. |
 | Linux x64 | `linux-x64.tar.gz` | Extract, run `NetCase/NetCase` from Terminal. |
 
-The launcher opens the web UI in your default browser. It listens only on an automatically chosen `127.0.0.1` port; closing the process stops the service. Your SQLite history remains in the OS user data directory. It is a portable folder, not an installer. macOS binaries are not Apple notarized, and Windows binaries are not code signed. The Linux binary may need a compatible glibc distribution; Ubuntu 22.04 or newer is the initial target.
+The launcher opens the web UI in your default browser. It listens only on an automatically chosen `127.0.0.1` port; closing the process stops the service. Your SQLite history remains in the OS user data directory. These are portable programs, not installers. macOS binaries are not Apple notarized, and Windows binaries are not code signed. The Linux binary may need a compatible glibc distribution; Ubuntu 22.04 or newer is the initial target. The earlier Windows ZIP remains available for users who prefer the folder version.
 
 ## What is included
 
