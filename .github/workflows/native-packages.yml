@@ -52,7 +52,7 @@ jobs:
       - name: Build, launch and verify local UI
         working-directory: backend
         run: uv run --no-sync python ../packaging/build.py
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: netcase-${{ matrix.runner }}
           path: release-dist/NetCase-0.1.0-preview.2-*
