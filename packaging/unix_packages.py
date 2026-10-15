@@ -5,6 +5,7 @@ import plistlib
 import shutil
 import subprocess
 import tempfile
+import time
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -12,6 +13,24 @@ ROOT = Path(__file__).resolve().parents[1]
 
 def check(command: list[str], cwd: Path | None = None, env: dict | None = None) -> None:
     subprocess.run(command, cwd=cwd, env=env, check=True, timeout=180)  # noqa: S603
+
+
+def disk_image(command: list[str]) -> None:
+    # DiskImages can transiently return EBUSY on native CI hosts. Keep its output
+    # in a file, not a pipe, and retry only this specific failure, at most twice.
+    for attempt in range(3):
+        with tempfile.TemporaryFile(mode="w+", encoding="utf-8") as log:
+            result = subprocess.run(  # noqa: S603
+                command, stdout=log, stderr=subprocess.STDOUT, timeout=120, check=False
+            )
+            log.seek(0)
+            output = log.read()
+        print(output, end="", flush=True)
+        if result.returncode == 0:
+            return
+        if "resource busy" not in output.lower() or attempt == 2:
+            result.check_returncode()
+        time.sleep(2 ** (attempt + 1))
 
 
 def self_test(executable: Path, directory: Path, appimage: bool = False) -> None:
@@ -46,13 +65,15 @@ def dmg(app: Path, destination: Path) -> None:
         shutil.copytree(app, stage / "NetCase.app", symlinks=True)
         (stage / "Applications").symlink_to("/Applications", target_is_directory=True)
         shutil.copy2(ROOT / "LICENSE", stage / "LICENSE")
-        check(
+        disk_image(
             [
                 "/usr/bin/hdiutil",
                 "create",
                 "-ov",
                 "-format",
                 "UDZO",
+                "-fs",
+                "HFS+",
                 "-volname",
                 "NetCase",
                 "-srcfolder",
@@ -60,10 +81,10 @@ def dmg(app: Path, destination: Path) -> None:
                 str(destination),
             ]
         )
-        check(["/usr/bin/hdiutil", "verify", str(destination)])
+        disk_image(["/usr/bin/hdiutil", "verify", str(destination)])
         mount = base / "mounted"
         mount.mkdir()
-        check(
+        disk_image(
             [
                 "/usr/bin/hdiutil",
                 "attach",
@@ -80,7 +101,7 @@ def dmg(app: Path, destination: Path) -> None:
             installed = isolated / "NetCase.app"
             shutil.copytree(mount / "NetCase.app", installed, symlinks=True)
         finally:
-            check(["/usr/bin/hdiutil", "detach", str(mount)])
+            disk_image(["/usr/bin/hdiutil", "detach", str(mount)])
         check(["/usr/bin/codesign", "--verify", "--deep", "--strict", str(installed)])
         self_test(installed / "Contents" / "MacOS" / "NetCase", isolated)
 
