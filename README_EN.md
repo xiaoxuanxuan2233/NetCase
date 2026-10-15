@@ -2,7 +2,7 @@
 
 | Platform / 平台 | Download / 下载 |
 | --- | --- |
-| Windows x64 | [ZIP](https://github.com/xiaoxuanxuan2233/NetCase/releases/download/v0.1.0-preview.2/NetCase-0.1.0-preview.2-windows-x64.zip) |
+| Windows x64 | [EXE](https://github.com/xiaoxuanxuan2233/NetCase/releases/download/v0.1.0-preview.2/NetCase-0.1.0-preview.2-windows-x64.exe) |
 | macOS Apple Silicon | [ZIP](https://github.com/xiaoxuanxuan2233/NetCase/releases/download/v0.1.0-preview.2/NetCase-0.1.0-preview.2-macos-arm64.zip) |
 | macOS Intel | [ZIP](https://github.com/xiaoxuanxuan2233/NetCase/releases/download/v0.1.0-preview.2/NetCase-0.1.0-preview.2-macos-x64.zip) |
 | Linux x64 | [tar.gz](https://github.com/xiaoxuanxuan2233/NetCase/releases/download/v0.1.0-preview.2/NetCase-0.1.0-preview.2-linux-x64.tar.gz) |
@@ -18,12 +18,12 @@ NetCase 用来排查网站访问问题，分别检查 DNS、TCP、TLS 和 HTTP�
 
 ## Run NetCase
 
-Current release: **v0.1.0-preview.2**. Extract the entire archive before running. Python, Node.js, and Docker are not required for these packages.
+Current release: **v0.1.0-preview.2**. Run the Windows EXE directly; extract the full archive on macOS / Linux. Python, Node.js, and Docker are not required for these packages.
 
-- **Windows:** open `NetCase/NetCase.exe`.
+- **Windows:** open the downloaded EXE.
 - **macOS / Linux:** run `NetCase/NetCase` in Terminal.
 
-NetCase opens your browser and listens only on `127.0.0.1`. Exiting the program stops the local service. Keep the full extracted folder, including the `_internal` directory next to the executable.
+NetCase opens your browser and listens only on `127.0.0.1`. Exiting the program stops the local service. The Windows EXE extracts its bundled components before opening the browser. On macOS / Linux, keep the entire extracted folder.
 
 Windows binaries are unsigned; macOS binaries are not notarized. Linux packages target Ubuntu 22.04+ compatible glibc environments. SHA-256 checksum files are available on the [release page](https://github.com/xiaoxuanxuan2233/NetCase/releases/tag/v0.1.0-preview.2).
 

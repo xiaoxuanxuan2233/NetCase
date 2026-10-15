@@ -6,6 +6,7 @@
 - Make redacted JSON exports importable and explain that removed data cannot be recovered.
 - Use the diagnosis DNS answers for the first HTTP connection; document redirect resolution conditions.
 - Publish updated Windows, Linux, and macOS portable packages.
+- Add a standalone Windows EXE download, verified from an isolated directory without adjacent support files.
 
 ## v0.1.0-preview.1
 
